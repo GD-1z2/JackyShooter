@@ -1,14 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.build.Builder) void {
-    // Standard target options allows the person running `zig build` to choose
-    // what target to build for. Here we do not override the defaults, which
-    // means any target is allowed, and the default is native. Other options
-    // for restricting supported target set are available.
     const target = b.standardTargetOptions(.{});
-
-    // Standard release options allow the person running `zig build` to select
-    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const mode = b.standardReleaseOptions();
 
     const exe = b.addExecutable("JackyShooter", "src/main.zig");
@@ -19,12 +12,16 @@ pub fn build(b: *std.build.Builder) void {
     exe.linkLibC();
     exe.addIncludeDir("/usr/local/include");
     exe.addIncludeDir("/usr/include");
+    exe.addIncludeDir("lib");
 
     exe.addPackagePath("zgl", "lib/zgl/zgl.zig");
     exe.addPackagePath("mach-glfw", "lib/mach-glfw/src/main.zig");
+    exe.addPackagePath("stb_image", "lib/stb_image/stb_image.h");
 
     exe.linkSystemLibrary("glfw");
     exe.linkSystemLibrary("epoxy");
+
+    exe.addCSourceFile("lib/stb_image/stb_image.c", &.{});
 
     const run_cmd = exe.run();
     run_cmd.step.dependOn(b.getInstallStep());
