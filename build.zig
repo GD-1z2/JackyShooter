@@ -16,12 +16,12 @@ pub fn build(b: *std.build.Builder) void {
 
     exe.addPackagePath("zgl", "lib/zgl/zgl.zig");
     exe.addPackagePath("mach-glfw", "lib/mach-glfw/src/main.zig");
-    exe.addPackagePath("stb_image", "lib/stb_image/stb_image.h");
+    exe.addPackagePath("zlm", "lib/zlm/zlm.zig");
 
     exe.linkSystemLibrary("glfw");
     exe.linkSystemLibrary("epoxy");
 
-    exe.addCSourceFile("lib/stb_image/stb_image.c", &.{});
+    exe.addCSourceFile("lib/stb_image.c", &.{});
 
     const run_cmd = exe.run();
     run_cmd.step.dependOn(b.getInstallStep());

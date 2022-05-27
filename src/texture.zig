@@ -1,6 +1,6 @@
 const gl = @import("zgl");
 const stb_image = @cImport({
-    @cInclude("stb_image/stb_image.h");
+    @cInclude("stb/stb_image.h");
 });
 
 pub fn loadTexture(path: [*]const u8, alpha: bool) gl.Texture {
@@ -22,8 +22,16 @@ pub fn loadTexture(path: [*]const u8, alpha: bool) gl.Texture {
     defer stb_image.stbi_image_free(data);
 
     if (data != null) {
-        gl.textureImage2D(.@"2d", 0, .rgb, @intCast(usize, width), @intCast(usize, height), //
-            if (alpha) .rgba else .rgb, .unsigned_byte, data);
+        gl.textureImage2D(
+            .@"2d",
+            0,
+            .rgb,
+            @intCast(usize, width),
+            @intCast(usize, height),
+            if (alpha) .rgba else .rgb,
+            .unsigned_byte,
+            data,
+        );
         gl.Texture.generateMipmap(texture);
     }
 
