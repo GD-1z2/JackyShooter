@@ -1,24 +1,40 @@
 #pragma once
 
+#include <cstring>
 #include <iostream>
 #include <jacky-common/types.hpp>
 #include <vector>
+#include <netinet/in.h>
 
 class MessageWriter {
 public:
-    template<typename T>
-    void writeArr(const T &arr) {
-        const int end = (int) vec.size();
-        vec.resize(end + arr.size() * sizeof(typename T::value_type));
-        std::copy(arr.data(), arr.data() + arr.size() * sizeof(typename T::value_type), vec.begin() + end);
+    void writeByte(u8 val) {
+        vec.push_back(val);
     }
 
-    void writeInt16(i16 val) {
-        const int end = (int) vec.size();
-        vec.resize(end + 2);
+    void writeShort(u16 val) {
+        vec.push_back((val >> 8) & 0xFF);
+        vec.push_back(val & 0xFF);
+    }
 
-        vec[end] = (u8) ((val >> 8) & 0xFF);
-        vec[end + 1] = (u8) (val & 0xFF);
+    void writeInt(u32 val) {
+        vec.push_back((val >> 24) & 0xFF);
+        vec.push_back((val >> 16) & 0xFF);
+        vec.push_back((val >> 8) & 0xFF);
+        vec.push_back(val & 0xFF);
+    }
+
+    void writeString(const std::string &str) {
+        writeInt(str.size());
+        vec.insert(vec.end(), str.begin(), str.end());
+    }
+
+    template<typename T>
+    void writeArr(const T &arr) {
+        const int size = (arr.size() * sizeof(typename T::value_type));
+        writeInt(size);
+        vec.resize(vec.size() + size);
+        std::memcpy(vec.data() + vec.size() - size, arr.data(), size);
     }
 
     void *data() {

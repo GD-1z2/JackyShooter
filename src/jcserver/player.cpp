@@ -4,7 +4,7 @@
 
 void Player::sendChatMessage(const std::wstring &message) {
     MessageWriter msg;
-    msg.writeInt16(0);
+    msg.writeShort(0);
     msg.writeArr(message);
     connection->send(msg.data(), msg.size());
 }

@@ -64,13 +64,12 @@ void Server::onMessage(const ws::connection_hdl &hdl, const WsServer::message_pt
         return;
 
     MessageReader reader{msg->get_payload()};
-    const u16 message_type = reader.readUInt16();
+    const u16 message_type = reader.readShort();
 
     if (SEND_CHAT_MESSAGE == message_type) {
         if (msg->get_payload().length() <= 2)
             return;
-        const auto message{reader.readArr<std::wstring>
-            ((int) ((msg->get_payload().length() - 2) / sizeof(wchar_t)))};
+        const auto message{reader.readArr<std::wstring>()};
         ws::lib::lock_guard<ws::lib::mutex> guard{actions_queue_lock};
         actions_queue.push(ServerAction{
             SEND_CHAT_MESSAGE, player_list.byConnection(hdl),
@@ -105,7 +104,7 @@ void Server::onMessage(const ws::connection_hdl &hdl, const WsServer::message_pt
             ws::lib::lock_guard<ws::lib::mutex> guard{player_list_lock};
 
             MessageWriter msg;
-            msg.writeInt16(ADD_CHAT_MESSAGE);
+            msg.writeShort(ADD_CHAT_MESSAGE);
             if (action.player)
                 msg.writeArr(L"<" + action.player->name + L"> " + data->message);
             else

@@ -25,7 +25,6 @@ void Chat::initRender() {
 }
 
 void Chat::addMessage(const std::wstring &message) {
-    return;
     messages.push_front(message);
     if (messages.size() > 6)
         messages.pop_back();

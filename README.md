@@ -16,7 +16,6 @@
 
 ## Roadmap
 
-- Fix protocol wide strings
 - Create functions for displaying text (writeChar, writeString, writeStringRightAligned)
 - Display unknown characters as ?
 - Add ability to type in chat

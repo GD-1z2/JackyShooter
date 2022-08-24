@@ -9,7 +9,7 @@ enum ClientActionType {
 };
 
 struct AddChatMessageData {
-    std::string message;
+    std::wstring message;
 };
 
 struct ClientAction {

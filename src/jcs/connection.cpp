@@ -14,20 +14,22 @@ bool GameScreen::connect(const std::string &uri) {
                    const ws::connection<ws::config::asio_client>::message_ptr &msg) {
                 const auto &msg_s = msg->get_payload();
                 std::cout << msg_s << std::endl;
-                if (msg_s.length() < 2)
+
+                if (msg_s.length() < 2) // Not enough space for packet ID
                     return;
 
                 MessageReader reader{msg_s};
 
-                const u16 type = reader.readUInt16();
+                const u16 type = reader.readShort();
 
                 if (ADD_CHAT_MESSAGE == type) {
-                    const auto message = reader.readArr<std::string>((int) msg_s.size() - 2);
-
-                    ws::lib::lock_guard<ws::lib::mutex> guard{actions_queue_lock};
+                    const auto message = reader.readArr<std::wstring>();
+                    ws::lib::lock_guard<ws::lib::mutex> guard{
+                        actions_queue_lock};
                     actions_queue.push(ClientAction{
                         ADD_CHAT_MESSAGE,
-                        std::make_unique<AddChatMessageData>(AddChatMessageData{message})
+                        std::make_unique<AddChatMessageData>(
+                            AddChatMessageData{message})
                     });
                 }
             });
@@ -46,7 +48,8 @@ bool GameScreen::connect(const std::string &uri) {
 
         return true;
     } catch (ws::exception const &e) {
-        std::cerr << "Exception occurred during connection:  " << e.what() << std::endl;
+        std::cerr << "Exception occurred during connection:  " << e.what()
+                  << std::endl;
     }
 
     return false;

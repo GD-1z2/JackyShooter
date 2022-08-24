@@ -27,14 +27,12 @@ void GameScreen::update() {
         ws::lib::unique_lock<ws::lib::mutex> lock{actions_queue_lock};
 
         while (!actions_queue.empty()) {
-            ClientAction action = std::move(actions_queue.front());
+            const ClientAction action = std::move(actions_queue.front());
             actions_queue.pop();
 
-            if (ADD_CHAT_MESSAGE == action.type) {
-                const std::string &message = std::get<std::unique_ptr<AddChatMessageData>>(
-                    action.data)->message;
-                chat.addMessage(std::wstring{message.begin(), message.end()});
-            }
+            if (ADD_CHAT_MESSAGE == action.type)
+                chat.addMessage(std::get<std::unique_ptr<AddChatMessageData>>(
+                    action.data)->message);
         }
     }
 
@@ -77,7 +75,7 @@ void GameScreen::onClick(int button, int action, int mods) {
     Screen::onClick(button, action, mods);
 
     MessageWriter msg;
-    msg.writeInt16(SEND_CHAT_MESSAGE);
+    msg.writeShort(SEND_CHAT_MESSAGE);
     msg.writeArr<std::wstring>(L"Bonjour, monde");
     if (action) ws_connection->send(msg.data(), msg.size());
 }
