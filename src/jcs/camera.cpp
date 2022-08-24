@@ -16,8 +16,9 @@ glm::mat4 Camera::getViewMatrix() const {
 }
 
 void Camera::processMouseMovement(float x_offset, float y_offset) {
-    yaw += x_offset * .07f;
-    pitch = glm::clamp(pitch + y_offset * .07f, -89.f, 89.f);
+    static const float SENSITIVITY = .05f;
+    yaw += x_offset * SENSITIVITY;
+    pitch = glm::clamp(pitch + y_offset * SENSITIVITY, -89.f, 89.f);
 
     updateVectors();
 }

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <jacky-common/types.hpp>
 #include <jcs/input_manager.hpp>
 #include <jcs/renderer.hpp>
 #include <jcs/screen.hpp>
 #include <jcs/shader.hpp>
-#include "jacky-common/types.hpp"
 #include <queue>
 #include <stack>
 
@@ -36,5 +36,6 @@ public:
     int frame_counter{}, frames_per_sec{};
 
 private:
-    std::vector<Screen*> screen_stack; /* not using an actual stack because we need to access non-top screens */
+    /* not using an actual stack because we need to access non-top screens */
+    std::vector<Screen *> screen_stack;
 };

@@ -27,8 +27,9 @@ void Renderer::init() {
     glCullFace(GL_BACK);
 
     gui_shader = {"assets/shaders/gui.vert", "assets/shaders/gui.frag"};
-
     world_shader = {"assets/shaders/world.vert", "assets/shaders/world.frag"};
+    skybox_shader = {"assets/shaders/skybox.vert",
+                     "assets/shaders/skybox.frag"};
 
     rect_vbo = {RECTANGLE_VERTICES, RECTANGLE_INDICES};
 
@@ -50,10 +51,18 @@ void Renderer::init() {
                           (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    container_texture = loadTexture("assets/textures/container.jpg", false);
-    button_texture = loadTexture("assets/textures/button.png", false, false);
-    steel_texture = loadTexture(
-        "assets/models/gun0/steel/Metal038_1K_Color.jpg", false);
+    button_texture = loadTexture("assets/textures/button.png", false);
+
+    skybox_texture = loadCubeMap(
+        {
+            "assets/textures/skybox/left.png",
+            "assets/textures/skybox/right.png",
+            "assets/textures/skybox/top.png",
+            "assets/textures/skybox/bottom.png",
+            "assets/textures/skybox/front.png",
+            "assets/textures/skybox/back.png",
+        }
+    );
 
     default_font = FontLoader{
         "assets/fonts/open_sans_regular_24.fnt",
@@ -71,19 +80,25 @@ void Renderer::prepareRender() {
                          1.f);
 }
 
-void Renderer::set2D() const {
+void Renderer::set2D() {
     glDisable(GL_DEPTH_TEST);
+
+    view = glm::mat4{1};
+
     if (GUI_SHADER == current_shader) {
         gui_shader.setProjection(proj_2d);
-        gui_shader.setView(glm::mat4{1.f});
+        gui_shader.setView(view);
     } else {
         world_shader.setProjection(proj_2d);
-        world_shader.setView(glm::mat4{1.f});
+        world_shader.setView(view);
     }
 }
 
-void Renderer::set3D(const glm::mat4 &view) const {
+void Renderer::set3D(const glm::mat4 &view_) {
     glEnable(GL_DEPTH_TEST);
+
+    this->view = view_;
+
     if (GUI_SHADER == current_shader) {
         gui_shader.setProjection(proj_3d);
         gui_shader.setView(view);

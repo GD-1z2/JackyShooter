@@ -7,6 +7,7 @@
 #include <jcs/chat.hpp>
 #include <jcs/player_controller.hpp>
 #include <jcs/screen.hpp>
+#include <jcs/skybox.hpp>
 
 class GameScreen : public Screen {
 public:
@@ -33,6 +34,7 @@ private:
     PlayerController player_controller;
     Camera camera;
     Chat chat;
+    SkyBox skybox;
     WsClient ws_client;
     WsClient::connection_ptr ws_connection;
     std::thread ws_thread;

@@ -49,9 +49,9 @@ public:
         last_y{SCR_HEIGHT / 2.f},
         mouse_x_offset{},
         mouse_y_offset{};
+
+    bool first_mouse{true};
 private:
     JSGame &game;
     InputBinding bindings[INPUT_COUNT];
-
-    bool first_mouse{true};
 };

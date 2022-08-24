@@ -1,7 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <jcserver/types.hpp>
+#include <jacky-common/types.hpp>
+#include <vector>
 
 class MessageWriter {
 public:

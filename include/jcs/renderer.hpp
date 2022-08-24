@@ -2,9 +2,10 @@
 
 #include <jcs/font.hpp>
 #include <jcs/model.hpp>
+#include <jcs/object.hpp>
 #include <jcs/shader.hpp>
+#include <jcs/skybox.hpp>
 #include <string>
-#include "object.hpp"
 
 class JSGame;
 
@@ -25,13 +26,13 @@ public:
      * Disables depth testing, sets projection matrix to orthographic and
      * view matrix to identity.
      */
-    void set2D() const;
+    void set2D();
 
     /**
      * Enables depth testing, sets projection matrix to perspective and view
      * matrix to view.
      */
-    void set3D(const glm::mat4 &view) const;
+    void set3D(const glm::mat4 &view);
 
     void useShader(ShaderType type);
 
@@ -75,11 +76,13 @@ public:
     ShaderType current_shader{GUI_SHADER};
     GuiShader gui_shader;
     WorldShader world_shader;
+    SkyboxShader skybox_shader;
 
-    glm::mat4 proj_3d{}, proj_2d{};
+    glm::mat4 proj_3d{}, proj_2d{}, view{};
     IndexedVertexBuffer rect_vbo{};
     Model gun_model{*this};
     uint text_vao{}, text_vbo{};
-    uint container_texture{}, button_texture{}, steel_texture{};
+    uint button_texture{};
+    uint skybox_texture{};
     BitMapFont default_font;
 };

@@ -1,5 +1,10 @@
 # Jacky Shooter
 
+## Resources
+
+- [Steel texture from AmbientCG](https://ambientcg.com/view?id=Metal038)
+- [SkyBox by MSGameDev](https://www.cgtrader.com/free-3d-models/space/other/spacebox-collection)
+
 ## Libraries
 
 - glfw
@@ -11,7 +16,7 @@
 
 ## Roadmap
 
-- Create Skybox class, with loading process in constructor and draw method
+- Create SkyBox class, with loading process in constructor and draw method
 - Optimize 3D model loading indexing
 - Fix protocol wide strings
 - Create functions for displaying text (writeChar, writeString, writeStringRightAligned)

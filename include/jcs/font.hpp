@@ -1,9 +1,9 @@
 #pragma once
 
-#include "jacky-common/types.hpp"
+#include <glm/vec2.hpp>
+#include <jacky-common/types.hpp>
 #include <string>
 #include <unordered_map>
-#include <glm/vec2.hpp>
 
 struct BitMapFontChar {
     uint id, x, y, width, height, x_advance;

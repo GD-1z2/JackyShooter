@@ -3,13 +3,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <vector>
 #include <iostream>
+#include <vector>
 
 class Camera {
 public:
-    explicit Camera(glm::vec3 position = {0.f, 0.f, 0.f}, glm::vec3 up = {0.0f, 1.0f, 0.0f},
-                    float yaw = -90.f, float pitch = 0.f);
+    explicit Camera(glm::vec3 position = {0.f, 0.f, 0.f},
+                    glm::vec3 up = {0.0f, 1.0f, 0.0f},
+                    float yaw = -90.f,
+                    float pitch = 0.f);
 
     [[nodiscard]] glm::mat4 getViewMatrix() const;
 

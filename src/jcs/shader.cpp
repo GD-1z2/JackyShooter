@@ -186,3 +186,17 @@ void WorldShader::setViewPos(const glm::vec3 &pos) const {
 void WorldShader::setLightPos(const glm::vec3 &pos) const {
     glUniform3f(light_pos_uniform, pos.x, pos.y, pos.z);
 }
+
+SkyboxShader::SkyboxShader(const char *vertex_path, const char *fragment_path) :
+    Shader{vertex_path, fragment_path},
+    view_uniform{glGetUniformLocation(shader_id, "view")},
+    projection_uniform{glGetUniformLocation(shader_id, "projection")} {
+}
+
+void SkyboxShader::setView(const glm::mat4 &mat) const {
+    glUniformMatrix4fv(view_uniform, 1, GL_FALSE, &mat[0][0]);
+}
+
+void SkyboxShader::setProjection(const glm::mat4 &mat) const {
+    glUniformMatrix4fv(projection_uniform, 1, GL_FALSE, &mat[0][0]);
+}

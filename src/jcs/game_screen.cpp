@@ -6,7 +6,12 @@
 #include <jcs/modal_screen.hpp>
 
 GameScreen::GameScreen(JSGame &game, const std::string &uri) :
-    Screen(game), camera{}, player_controller{game, camera}, chat{game} {
+    Screen{game},
+    camera{},
+    player_controller{game, camera},
+    chat{game},
+    skybox{game.renderer, game.renderer.skybox_texture} {
+
     if (!connect(uri))
         throw std::runtime_error{"WebSocket connection failed"};
 
@@ -26,7 +31,8 @@ void GameScreen::update() {
             actions_queue.pop();
 
             if (ADD_CHAT_MESSAGE == action.type) {
-                const std::string &message = std::get<std::unique_ptr<AddChatMessageData>>(action.data)->message;
+                const std::string &message = std::get<std::unique_ptr<AddChatMessageData>>(
+                    action.data)->message;
                 chat.addMessage(std::wstring{message.begin(), message.end()});
             }
         }
@@ -36,11 +42,14 @@ void GameScreen::update() {
 
     player_controller.update();
 
-    camera.processMouseMovement(game.input_manager.mouse_x_offset, game.input_manager.mouse_y_offset);
+    camera.processMouseMovement(game.input_manager.mouse_x_offset,
+                                game.input_manager.mouse_y_offset);
 }
 
 void GameScreen::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    skybox.draw(glm::lookAt(glm::vec3{}, camera.front, camera.up));
 
     game.renderer.useShader(WORLD_SHADER);
     game.renderer.set3D(camera.getViewMatrix());
@@ -58,8 +67,10 @@ void GameScreen::render() {
 }
 
 void GameScreen::onFocus() {
-    glfwSetCursorPos(game.window, game.window_width / 2, game.window_height / 2);
+    glfwSetCursorPos(game.window, game.window_width / 2,
+                     game.window_height / 2);
     glfwSetInputMode(game.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    game.input_manager.first_mouse = true;
 }
 
 void GameScreen::onClick(int button, int action, int mods) {
@@ -84,8 +95,10 @@ bool GameScreen::onKey(int key, int scancode, int action, int mods) {
                 );
 
                 // Terminate connection
-                if (screen.ws_connection->get_state() == ws::session::state::open)
-                    screen.ws_connection->close(ws::close::status::normal, "Disconnect");
+                if (screen.ws_connection->get_state() ==
+                    ws::session::state::open)
+                    screen.ws_connection->close(ws::close::status::normal,
+                                                "Disconnect");
                 screen.ws_thread.join();
 
                 screen.game.showScreen(new MainScreen{screen.game}, true);

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "jacky-common/types.hpp"
-#include "model.hpp"
+#include <jacky-common/types.hpp>
+#include <jcs/model.hpp>
 #include <string>
 
 struct Shader {
@@ -78,4 +78,16 @@ struct WorldShader : public Shader {
         material_metalness_uniform{},
         view_pos_uniform{},
         light_pos_uniform{};
+};
+
+struct SkyboxShader : public Shader {
+    SkyboxShader() = default;
+
+    SkyboxShader(const char *vertex_path, const char *fragment_path);
+
+    void setView(const glm::mat4 &mat) const;
+
+    void setProjection(const glm::mat4 &mat) const;
+
+    int view_uniform{}, projection_uniform{};
 };
