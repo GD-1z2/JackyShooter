@@ -49,8 +49,6 @@ void GameScreen::update() {
 void GameScreen::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    skybox.draw(glm::lookAt(glm::vec3{}, camera.front, camera.up));
-
     game.renderer.useShader(WORLD_SHADER);
     game.renderer.set3D(camera.getViewMatrix());
     game.renderer.world_shader.setViewPos(camera.position);
@@ -58,6 +56,8 @@ void GameScreen::render() {
 
     game.renderer.setTransform({0, 0, -3}, {.1, .1, .1});
     game.renderer.gun_model.draw();
+
+    skybox.draw(glm::lookAt(glm::vec3{}, camera.front, camera.up));
 
     game.renderer.useShader(GUI_SHADER);
 

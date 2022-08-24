@@ -9,5 +9,5 @@ uniform mat4 projection;
 void main()
 {
     oTexCoords = iPos;
-    gl_Position = projection * view * vec4(iPos, 1.0);
+    gl_Position = (projection * view * vec4(iPos, 1.0)).xyww;
 }

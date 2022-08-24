@@ -65,6 +65,7 @@ SkyBox::SkyBox(Renderer &renderer, uint texture) : renderer{renderer},
 
 void SkyBox::draw(const glm::mat4 &view) const {
     glDepthMask(GL_FALSE);
+    glDepthFunc(GL_LEQUAL);
 
     renderer.skybox_shader.use();
     renderer.skybox_shader.setView(view);
@@ -78,5 +79,6 @@ void SkyBox::draw(const glm::mat4 &view) const {
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glBindVertexArray(0);
+    glDepthFunc(GL_LESS);
     glDepthMask(GL_TRUE);
 }
