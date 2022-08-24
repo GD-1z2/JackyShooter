@@ -17,7 +17,13 @@ struct Normal {
 };
 
 struct Face {
-    struct {
+    struct FaceVertex {
+        bool operator==(const FaceVertex &rhs) const {
+            return vertex_index == rhs.vertex_index &&
+                   tex_coord_index == rhs.tex_coord_index &&
+                   normal_index == rhs.normal_index;
+        }
+
         int vertex_index, tex_coord_index, normal_index;
     } vertices[3];
 };

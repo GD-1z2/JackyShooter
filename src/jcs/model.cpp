@@ -66,21 +66,42 @@ void Mesh::init(const std::vector<Vertex> &vertices,
 
     auto vertex_buffer = std::vector<float>();
     auto index_buffer = std::vector<int>();
+
+    // Reserve maximum size for buffers
     vertex_buffer.reserve(faces.size() * 3 * VERTEX_WIDTH);
     index_buffer.reserve(faces.size() * 3);
 
-    for (const auto &face: faces) {
-        for (const auto &vertex: face.vertices) {
-            vertex_buffer.push_back(vertices[vertex.vertex_index].x);
-            vertex_buffer.push_back(vertices[vertex.vertex_index].y);
-            vertex_buffer.push_back(vertices[vertex.vertex_index].z);
-            vertex_buffer.push_back(tex_coords[vertex.tex_coord_index].u);
-            vertex_buffer.push_back(tex_coords[vertex.tex_coord_index].v);
-            vertex_buffer.push_back(normals[vertex.normal_index].x);
-            vertex_buffer.push_back(normals[vertex.normal_index].y);
-            vertex_buffer.push_back(normals[vertex.normal_index].z);
+    uint reused{};
 
-            index_buffer.push_back(static_cast<int>(index_buffer.size()));
+    for (int i{}; i < faces.size(); i++) {
+        for (const auto &vertex: faces[i].vertices) {
+            const float data[VERTEX_WIDTH]{
+                vertices[vertex.vertex_index].x,
+                vertices[vertex.vertex_index].y,
+                vertices[vertex.vertex_index].z,
+                tex_coords[vertex.tex_coord_index].u,
+                tex_coords[vertex.tex_coord_index].v,
+                normals[vertex.normal_index].x,
+                normals[vertex.normal_index].y,
+                normals[vertex.normal_index].z,
+            };
+
+            for (int j{}; j < vertex_buffer.size() / VERTEX_WIDTH; j++) {
+                if (0 == std::memcmp(
+                    data, &vertex_buffer[j * VERTEX_WIDTH], VERTEX_SIZE)) {
+
+                    index_buffer.push_back(j);
+                    reused++;
+                    goto next_vertex;
+                }
+            }
+
+            vertex_buffer.insert(vertex_buffer.end(), data,
+                                 data + VERTEX_WIDTH);
+            index_buffer.push_back(
+                static_cast<int>(index_buffer.size() - reused));
+
+            next_vertex:;
         }
     }
 
