@@ -1,9 +1,9 @@
-#include <glad/glad.h>
+#include "glad/glad.hpp"
 
 #include <jcs/renderer.hpp>
 #include <jcs/skybox.hpp>
 #include <jcs/texture.hpp>
-#include <stb/stb_image.h>
+#include <stb/stb_image.hpp>
 
 static const float SKYBOX_VERTICES[]{
     -1.0f, 1.0f, -1.0f,

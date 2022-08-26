@@ -21,4 +21,5 @@ public:
 private:
     GuiTextButton *play_button;
     GuiTextInput *ip_input, *name_input;
+    VertexBuffer title_vbo;
 };

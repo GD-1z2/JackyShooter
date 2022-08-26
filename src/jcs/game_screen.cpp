@@ -74,10 +74,11 @@ void GameScreen::onFocus() {
 void GameScreen::onClick(int button, int action, int mods) {
     Screen::onClick(button, action, mods);
 
-    MessageWriter msg;
-    msg.writeShort(SEND_CHAT_MESSAGE);
-    msg.writeArr<std::wstring>(L"Bonjour, monde");
-    if (action) ws_connection->send(msg.data(), msg.size());
+//    MessageWriter msg;
+//    msg.writeShort(SEND_CHAT_MESSAGE);
+//    msg.writeArr<std::wstring>(L"Bonjour, monde");
+//    if (action) ws_connection->send(msg.data(), msg.size());
+chat.addMessage(L"Bonjour le monde ceci est un message long");
 }
 
 bool GameScreen::onKey(int key, int scancode, int action, int mods) {

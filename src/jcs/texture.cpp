@@ -1,6 +1,6 @@
-#include <glad/glad.h>
+#include "glad/glad.hpp"
 #include <jcs/texture.hpp>
-#include <stb/stb_image.h>
+#include <stb/stb_image.hpp>
 #include <stdexcept>
 
 uint loadTexture(const std::string &path, bool linear) {

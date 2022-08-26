@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include "glad/glad.hpp"
 
 #include <codecvt>
 #include <jcs/game.hpp>
@@ -51,6 +51,14 @@ MainScreen::MainScreen(JSGame &game) :
 
     glClearColor(0.6588235294117647f, 0.19607843137254902f, 0.4117647058823529f,
                  1.f); // horrible pink
+
+
+    std::vector<float> title_buff(12 * 30);
+    game.renderer.default_font.writeStringDataRightAligned(
+        title_buff.data(), L"Jacky", game.window_width - 48, 0, 36);
+    game.renderer.default_font.writeStringDataRightAligned(
+        title_buff.data() + 5 * 30, L"Shooter", game.window_width - 48, 48, 48);
+    title_vbo = VertexBuffer{title_buff};
 }
 
 MainScreen::~MainScreen() {
@@ -71,10 +79,8 @@ void MainScreen::render() {
     Screen::render();
 
     game.renderer.clearTransform();
-    game.renderer.drawText(L"Jacky", game.window_width / 3.f,
-                           game.window_height / 4.f, 48);
-    game.renderer.drawText(L"Shooter", game.window_width / 2.f,
-                           game.window_height / 3.f, 48);
+
+    title_vbo.draw();
 }
 
 void MainScreen::onFocus() {

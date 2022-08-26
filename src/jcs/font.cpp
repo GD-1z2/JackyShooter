@@ -1,41 +1,35 @@
-#include <glad/glad.h>
+#include <glad/glad.hpp>
+
 #include <jcs/font.hpp>
+
+#include <iostream>
 
 BitMapFontChar BitMapFont::getChar(uint code) const {
     return chars.at(code);
 }
 
-void BitMapFont::writeStringData(std::wstring &text, float x, float y,
-                                 float text_size) const {
-    text_size /= (float) size;
+BitMapFontChar BitMapFont::getCharOrDefault(u32 code) const {
+    if (!default_char)
+        return chars.at(code);
 
-    const auto buff = new float[text.length() * 30];
-
-    for (size_t i{}; i < text.length(); i++) {
-        const auto char_data = getChar(text[i]);
-        writeCharData(buff + i * 30, char_data, x, y, text_size);
-        x += (float) char_data.x_advance * text_size;
-    }
-
-    glBufferData(GL_ARRAY_BUFFER, (long) (text.length() * 30 * sizeof(float)),
-                 buff, GL_DYNAMIC_DRAW);
-
-    delete[] buff;
+    const auto it = chars.find(code);
+    if (chars.end() == it)
+        return *default_char;
+    return it->second;
 }
 
 void BitMapFont::writeCharData(float *out, const BitMapFontChar &char_data,
-                               float x, float y, float text_size) const {
-    text_size /= (float) size;
-
+                               float x, float y, float real_size) const {
     const float
-        x_ = x + (float) char_data.x_offset * text_size,
-        y_ = y + (float) char_data.y_offset * text_size,
-        x_end = x_ + (float) char_data.width * text_size,
-        y_end = y_ + (float) char_data.height * text_size,
-        tex_x = (float) char_data.x / 512.f,
-        tex_x_end = (float) (char_data.x + char_data.width) / 512.f,
-        tex_y = (float) char_data.y / -256.f,
-        tex_y_end = (float) (char_data.y + char_data.height) / -256.f;
+        text_size = real_size / size,
+        x_ = x + char_data.x_offset * text_size,
+        y_ = y + char_data.y_offset * text_size,
+        x_end = x_ + char_data.width * text_size,
+        y_end = y_ + char_data.height * text_size,
+        tex_x = char_data.x / 512.f,
+        tex_x_end = (char_data.x + char_data.width) / 512.f,
+        tex_y = char_data.y / -256.f,
+        tex_y_end = (char_data.y + char_data.height) / -256.f;
 
     out[0] = x_end;
     out[5] = x_end;
@@ -71,6 +65,29 @@ void BitMapFont::writeCharData(float *out, const BitMapFontChar &char_data,
     out[19] = tex_y;
     out[24] = tex_y;
     out[29] = tex_y_end;
+}
+
+void BitMapFont::writeStringData(float *out,
+                                 const std::wstring &text,
+                                 float x, float y,
+                                 float real_size) const {
+    for (size_t i{}; i < text.length(); i++) {
+        const auto char_data = getCharOrDefault(text[i]);
+        writeCharData(out + i * 30, char_data, x, y, real_size);
+        x += char_data.x_advance * (real_size / size);
+    }
+}
+
+void BitMapFont::writeStringDataRightAligned(float *out,
+                                             const std::wstring &text,
+                                             float x, float y,
+                                             float real_size) const {
+    const float text_size = real_size / size;
+    for (size_t i{text.length()}; i > 0; i--) {
+        const auto char_data = getCharOrDefault(text[i - 1]);
+        writeCharData(out + (i - 1) * 30, char_data, x - char_data.x_advance * text_size, y, real_size);
+        x -= char_data.x_advance * text_size;
+    }
 }
 
 float BitMapFont::getTextWidth(const std::wstring &text,

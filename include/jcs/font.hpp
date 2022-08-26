@@ -6,26 +6,49 @@
 #include <unordered_map>
 
 struct BitMapFontChar {
-    uint id, x, y, width, height, x_advance;
-    int x_offset, y_offset;
+    uint id;
+    float x, y, width, height, x_advance, x_offset, y_offset;
 };
 
 struct BitMapFont {
-    BitMapFontChar getChar(uint code) const;
+    BitMapFontChar getChar(u32 code) const;
 
-    void writeStringData(std::wstring &text, float x, float y, float text_size) const;
+    BitMapFontChar getCharOrDefault(u32 code) const;
 
-    void writeCharData(float *out, const BitMapFontChar &char_data,
-                       float x, float y, float text_size) const;
+    /**
+     * Will write 30 floats to out.
+     */
+    void writeCharData(float *out,
+                       const BitMapFontChar &char_data,
+                       float x, float y,
+                       float real_size) const;
+
+    /**
+     * Will write (text.size() * 30) floats to out.
+     */
+    void writeStringData(float *out,
+                         const std::wstring &text,
+                         float x, float y,
+                         float real_size) const;
+
+    /**
+     * Will write (text.size() * 30) floats to out.
+     */
+    void writeStringDataRightAligned(float *out,
+                                     const std::wstring &text,
+                                     float x, float y,
+                                     float real_size) const;
 
     float getTextWidth(const std::wstring &text, float text_size) const;
 
     std::string name;
-    uint size;
+    float size;
     bool bold{false}, italic{false}, smooth{true};
     glm::uvec2 spacing;
     uint line_height, base, scaleW, scaleH;
     uint texture; /* OpenGL Texture */
 
-    std::unordered_map<uint, BitMapFontChar> chars;
+    std::unordered_map<u32, BitMapFontChar> chars;
+
+    BitMapFontChar *default_char{nullptr};
 };

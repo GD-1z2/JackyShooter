@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include "glad/glad.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <jcs/font_loader.hpp>
@@ -154,9 +154,10 @@ void Renderer::useMaterial(const Material &material) const {
     world_shader.setMaterial(material);
 }
 
-void Renderer::drawText(const std::wstring &text, float x, float y,
-                        uint size) const {
-    if (!size) size = default_font.size;
+void Renderer::drawText(const std::wstring &text,
+                        float x, float y,
+                        float size) const {
+    if (0 == size) size = default_font.size;
 
     useTexture(default_font.texture);
 
@@ -167,58 +168,7 @@ void Renderer::drawText(const std::wstring &text, float x, float y,
     glBindBuffer(GL_ARRAY_BUFFER, text_vbo);
 
     const auto buff = new float[text.length() * 30];
-
-    for (int i{}; i < text.length(); i++) {
-        const auto char_data = default_font.getChar(text[i]);
-
-        const float
-            text_size = (float) size / (float) default_font.size,
-            x_ = x + (float) char_data.x_offset * text_size,
-            y_ = y + (float) char_data.y_offset * text_size,
-            x_end = x_ + (float) char_data.width * text_size,
-            y_end = y_ + (float) char_data.height * text_size,
-            tex_x = (float) char_data.x / 512.f,
-            tex_x_end = (float) (char_data.x + char_data.width) / 512.f,
-            tex_y = (float) char_data.y / -256.f,
-            tex_y_end = (float) (char_data.y + char_data.height) / -256.f;
-
-        buff[i * 30 + 0] = x_end;
-        buff[i * 30 + 5] = x_end;
-        buff[i * 30 + 10] = x_;
-        buff[i * 30 + 15] = x_end;
-        buff[i * 30 + 20] = x_;
-        buff[i * 30 + 25] = x_;
-
-        buff[i * 30 + 1] = y_end;
-        buff[i * 30 + 6] = y_;
-        buff[i * 30 + 11] = y_end;
-        buff[i * 30 + 16] = y_;
-        buff[i * 30 + 21] = y_;
-        buff[i * 30 + 26] = y_end;
-
-        buff[i * 30 + 2] = 0;
-        buff[i * 30 + 7] = 0;
-        buff[i * 30 + 12] = 0;
-        buff[i * 30 + 17] = 0;
-        buff[i * 30 + 22] = 0;
-        buff[i * 30 + 27] = 0;
-
-        buff[i * 30 + 3] = tex_x_end;
-        buff[i * 30 + 8] = tex_x_end;
-        buff[i * 30 + 13] = tex_x;
-        buff[i * 30 + 18] = tex_x_end;
-        buff[i * 30 + 23] = tex_x;
-        buff[i * 30 + 28] = tex_x;
-
-        buff[i * 30 + 4] = tex_y_end;
-        buff[i * 30 + 9] = tex_y;
-        buff[i * 30 + 14] = tex_y_end;
-        buff[i * 30 + 19] = tex_y;
-        buff[i * 30 + 24] = tex_y;
-        buff[i * 30 + 29] = tex_y_end;
-
-        x += (float) char_data.x_advance * text_size;
-    }
+    default_font.writeStringData(buff, text, x, y, size);
 
     glBufferData(GL_ARRAY_BUFFER, (long) (text.length() * 30 * sizeof(float)),
                  buff, GL_DYNAMIC_DRAW);
@@ -227,13 +177,14 @@ void Renderer::drawText(const std::wstring &text, float x, float y,
     delete[] buff;
 }
 
-float Renderer::getTextWidth(const std::wstring &text, uint size) const {
+float Renderer::getTextWidth(const std::wstring &text, float size) const {
     float width{};
 
-    const float text_size = size ? (float) size / (float) default_font.size : 1;
+    const float text_size = (0 == size)
+        ? (size / default_font.size) : 1;
 
     for (int i{}; i < text.length(); i++)
-        width += (float) default_font.getChar(text[i]).x_advance * text_size;
+        width += default_font.getChar(text[i]).x_advance * text_size;
 
     return width;
 }

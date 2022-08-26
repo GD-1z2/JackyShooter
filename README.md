@@ -16,7 +16,5 @@
 
 ## Roadmap
 
-- Create functions for displaying text (writeChar, writeString, writeStringRightAligned)
-- Display unknown characters as ?
 - Add ability to type in chat
 - Fix chat overflow clipping

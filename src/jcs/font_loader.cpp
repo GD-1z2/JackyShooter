@@ -70,6 +70,10 @@ BitMapFont FontLoader::loadFont() {
                     ch.x_advance = std::get<int>(val);
 
             font.chars[ch.id] = ch;
+
+            static const u32 QUESTION_MARK_CODE = 0x3F;
+            if (QUESTION_MARK_CODE == ch.id)
+                font.default_char = &font.chars[ch.id];
         }
     }
 

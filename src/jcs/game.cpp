@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include "glad/glad.hpp"
 #include <jcs/game.hpp>
 #include <jcs/input_manager.hpp>
 #include <jcs/main_screen.hpp>

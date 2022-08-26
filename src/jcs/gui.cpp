@@ -157,8 +157,9 @@ bool GuiTextInput::onKey(int key, int scancode, int action, int mods) {
 
 void GuiTextInput::onChar(uint codepoint) {
     if (focused &&
-        screen.game.renderer.default_font.chars.find(codepoint) !=
-        screen.game.renderer.default_font.chars.end()) {
+        screen.game.renderer.default_font.chars.find(codepoint)
+        != screen.game.renderer.default_font.chars.end()
+        ) {
         value += (wchar_t) codepoint;
         if (change_handler)
             change_handler(*this, codepoint);

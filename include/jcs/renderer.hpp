@@ -67,9 +67,9 @@ public:
     void useMaterial(const Material &material) const;
 
     void
-    drawText(const std::wstring &text, float x, float y, uint size = 0) const;
+    drawText(const std::wstring &text, float x, float y, float size = 0) const;
 
-    float getTextWidth(const std::wstring &text, uint size = 0) const;
+    float getTextWidth(const std::wstring &text, float size = 0) const;
 
     JSGame &game;
 

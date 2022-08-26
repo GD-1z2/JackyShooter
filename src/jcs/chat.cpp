@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include "glad/glad.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <jcs/chat.hpp>
@@ -17,10 +17,12 @@ void Chat::initRender() {
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                          (void *) 0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                          (void *) (3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 }
 
@@ -29,7 +31,7 @@ void Chat::addMessage(const std::wstring &message) {
     if (messages.size() > 6)
         messages.pop_back();
 
-    const float text_size = .5f;
+    const float text_size = 12 / game.renderer.default_font.size;
 
     chat_height = 0;
 
@@ -48,80 +50,49 @@ void Chat::addMessage(const std::wstring &message) {
         for (int j{0}; j < msg.length(); j++, i++) {
             const auto char_data = game.renderer.default_font.getChar(msg[j]);
 
-            if ((uint) ((float) x + (float) (char_data.width + char_data.x_offset) * text_size) > max_width) {
+            if ((uint) ((float) x +
+                        (char_data.width + char_data.x_offset) * text_size
+                        ) > max_width) {
                 x = 0;
-                y += (int) ((float) game.renderer.default_font.line_height * text_size);
+                y += (int) ((float) game.renderer.default_font.line_height *
+                            text_size);
 
                 chat_height++;
 
-                if (std::distance(it, messages.rend()) == 1)
+                if (1 == std::distance(it, messages.rend()))
                     animation_height++;
             }
 
-            const auto
-                x_ = (float) x + (float) char_data.x_offset * text_size,
-                y_ = (float) y + (float) char_data.y_offset * text_size,
-                x_end = (float) x + (float) (char_data.width + char_data.x_offset) * text_size,
-                y_end = (float) y + (float) (char_data.height + char_data.y_offset) * text_size,
-                tex_x = (float) char_data.x / 512.f,
-                tex_x_end = (float) (char_data.x + char_data.width) / 512.f,
-                tex_y = (float) char_data.y / -256.f,
-                tex_y_end = (float) (char_data.y + char_data.height) / -256.f;
+            game.renderer.default_font.writeCharData(
+                buff.data() + i * 30,
+                char_data, (float) x,
+                (float) y, 12);
 
-            buff[i * 30 + 0] = x_end;
-            buff[i * 30 + 5] = x_end;
-            buff[i * 30 + 10] = x_;
-            buff[i * 30 + 15] = x_end;
-            buff[i * 30 + 20] = x_;
-            buff[i * 30 + 25] = x_;
-
-            buff[i * 30 + 1] = y_end;
-            buff[i * 30 + 6] = y_;
-            buff[i * 30 + 11] = y_end;
-            buff[i * 30 + 16] = y_;
-            buff[i * 30 + 21] = y_;
-            buff[i * 30 + 26] = y_end;
-
-            buff[i * 30 + 2] = 0;
-            buff[i * 30 + 7] = 0;
-            buff[i * 30 + 12] = 0;
-            buff[i * 30 + 17] = 0;
-            buff[i * 30 + 22] = 0;
-            buff[i * 30 + 27] = 0;
-
-            buff[i * 30 + 3] = tex_x_end;
-            buff[i * 30 + 8] = tex_x_end;
-            buff[i * 30 + 13] = tex_x;
-            buff[i * 30 + 18] = tex_x_end;
-            buff[i * 30 + 23] = tex_x;
-            buff[i * 30 + 28] = tex_x;
-
-            buff[i * 30 + 4] = tex_y_end;
-            buff[i * 30 + 9] = tex_y;
-            buff[i * 30 + 14] = tex_y_end;
-            buff[i * 30 + 19] = tex_y;
-            buff[i * 30 + 24] = tex_y;
-            buff[i * 30 + 29] = tex_y_end;
-
-            x += (int) ((float) char_data.x_advance * text_size);
+            x += (int) (char_data.x_advance * text_size);
         }
 
         y += (int) ((float) game.renderer.default_font.line_height * text_size);
         chat_height++;
     }
 
-    chat_height = (uint) ((float) chat_height * (float) game.renderer.default_font.line_height * text_size);
-    animation_height *= (float) game.renderer.default_font.line_height * text_size;
+    chat_height = (uint) ((float) chat_height *
+                          (float) game.renderer.default_font.line_height *
+                          text_size);
+    animation_height *=
+        (float) game.renderer.default_font.line_height * text_size;
 
     triangle_count = (int) buff.size() / 5;
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, (long) (buff.size() * sizeof(float)), buff.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (long) (buff.size() * sizeof(float)),
+                 buff.data(), GL_DYNAMIC_DRAW);
 }
 
 void Chat::render() const {
-    const int anim_offset = (int) ((1.f - std::min((game.now - animation_start) * 4.f, 1.f)) * animation_height);
+    const int anim_offset = (int) (
+        (1.f - std::min((game.now - animation_start) * 4.f, 1.f)) *
+        animation_height);
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
