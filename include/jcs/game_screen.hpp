@@ -19,6 +19,8 @@ public:
 
     void render() override;
 
+    void onResize() override;
+
     void onFocus() override;
 
     void onClick(int button, int action, int mods) override;
@@ -29,6 +31,8 @@ public:
 
 
     bool connect(const std::string &uri);
+
+    bool display_overlays{true};
 
 private:
     PlayerController player_controller;

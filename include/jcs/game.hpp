@@ -30,7 +30,7 @@ public:
 
     Renderer renderer;
 
-    InputManager input_manager;
+    InputManager inputs;
 
     float delta{}, frame_last{}, frame_timer, now;
     int frame_counter{}, frames_per_sec{};

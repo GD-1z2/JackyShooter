@@ -16,5 +16,11 @@
 
 ## Roadmap
 
-- Add ability to type in chat
-- Fix chat overflow clipping
+- Add 3rd person camera
+- Add player model
+- Sync position with server & other players
+- Add ability to hold objects
+- Create 2 player modes : normal and free camera
+- Add basic physics to normal mode
+- Add collision detection
+- Add ability for the server to set a player's position or velocity

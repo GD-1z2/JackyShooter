@@ -3,10 +3,10 @@
 #include <jcs/gui.hpp>
 
 void GuiObject::update() {
-    hovered = screen.game.input_manager.mouse_x > x &&
-              screen.game.input_manager.mouse_x < x + width &&
-              screen.game.input_manager.mouse_y > y &&
-              screen.game.input_manager.mouse_y < y + height;
+    hovered = screen.game.inputs.mouse_x > x &&
+              screen.game.inputs.mouse_x < x + width &&
+              screen.game.inputs.mouse_y > y &&
+              screen.game.inputs.mouse_y < y + height;
 }
 
 void GuiObject::onClick(int button, int action, int mods) {
@@ -55,12 +55,12 @@ void GuiTextButton::render() {
     auto &renderer = screen.game.renderer;
 
     if (focused) {
-        renderer.useColor({1, 1, 1, 1});
+        renderer.gui_shader.useColor({1, 1, 1, 1});
         renderer.setTransform({x - 2, y - 2, 0}, {width + 4, height + 4, 1});
         renderer.rect_vbo.draw();
     }
 
-    renderer.useTexture(renderer.button_texture);
+    renderer.gui_shader.useTexture(renderer.button_texture);
     renderer.setTransform({x, y, 0}, {width, height, 1});
 
     static const glm::mat4
@@ -96,20 +96,21 @@ GuiTextInput::GuiTextInput(Screen &screen, float x, float y, float width,
                            GuiTextInput::ChangeHandler change_handler) :
     GuiObject{screen, x, y, width, height, resize_handler},
     change_handler{change_handler},
-    text_offset{
-        (height - (float) screen.game.renderer.default_font.line_height) /
-        2.f} {}
+    text_offset{(height -
+                 (float) screen.game.renderer.default_font.line_height
+                 * (height / 50))
+                / 2.f} {}
 
 void GuiTextInput::render() {
     const auto &renderer = screen.game.renderer;
 
     if (focused) {
-        renderer.useColor({1, 1, 1, 1});
+        renderer.gui_shader.useColor({1, 1, 1, 1});
         renderer.setTransform({x - 2, y - 2, 0}, {width + 4, height + 4, 1});
         renderer.rect_vbo.draw();
     }
 
-    renderer.useColor({0, 0, 0, 1});
+    renderer.gui_shader.useColor({0, 0, 0, 1});
     renderer.setTransform({x, y, 0}, {width, height, 1});
     renderer.rect_vbo.draw();
 
@@ -121,7 +122,8 @@ void GuiTextInput::render() {
         renderer.setTransform({width - text_offset - text_w, 0, 0}, {1, 1, 1});
     renderer.setClip(
         {x, 0, screen.game.window_width, screen.game.window_height});
-    renderer.drawText(value, x + text_offset, y + text_offset, 24);
+    renderer.drawText(value, x + text_offset, y + text_offset,
+                      height / 50 * 24);
     renderer.setClip(
         {0, 0, screen.game.window_width, screen.game.window_height});
 }
@@ -147,7 +149,7 @@ bool GuiTextInput::onKey(int key, int scancode, int action, int mods) {
         } else {
             value.pop_back();
         }
-    } else if (key == GLFW_KEY_ESCAPE) {
+    } else if (screen.game.inputs.is(key, JSINPUT_ESCAPE)) {
         screen.focusObject(nullptr);
         return true;
     }

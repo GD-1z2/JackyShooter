@@ -7,22 +7,22 @@ PlayerController::PlayerController(JSGame &game, Camera &camera) :
 void PlayerController::update() {
     const float distance = game.delta * speed;
 
-    if (game.input_manager.getInput(JSINPUT_FORWARD))
+    if (game.inputs.getInput(JSINPUT_FORWARD))
         position += camera.flat_front * distance;
 
-    if (game.input_manager.getInput(JSINPUT_BACKWARD))
+    if (game.inputs.getInput(JSINPUT_BACKWARD))
         position -= camera.flat_front * distance * .6f;
 
-    if (game.input_manager.getInput(JSINPUT_LEFT))
+    if (game.inputs.getInput(JSINPUT_LEFT))
         position -= camera.right * distance * .7f;
 
-    if (game.input_manager.getInput(JSINPUT_RIGHT))
+    if (game.inputs.getInput(JSINPUT_RIGHT))
         position += camera.right * distance * .7f;
 
-    if (game.input_manager.getInput(JSINPUT_JUMP))
+    if (game.inputs.getInput(JSINPUT_JUMP))
         position.y += distance;
 
-    if (game.input_manager.getInput(JSINPUT_CROUCH))
+    if (game.inputs.getInput(JSINPUT_CROUCH))
         position.y -= distance;
 
     camera.position = position;

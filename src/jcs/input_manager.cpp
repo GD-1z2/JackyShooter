@@ -9,6 +9,7 @@ InputManager::InputManager(JSGame &game) : game{game}, bindings{
     {GLFW_KEY_SPACE},      // JSINPUT_JUMP
     {GLFW_KEY_LEFT_SHIFT}, // JSINPUT_CROUCH
     {GLFW_KEY_ESCAPE},     // JSINPUT_ESCAPE
+    {GLFW_KEY_T},          // JSINPUT_CHAT
 } {}
 
 void InputManager::update() {
@@ -46,6 +47,10 @@ int InputManager::getInput(InputBindings input) const {
 
 int InputManager::getPreviousInput(InputBindings input) const {
     return bindings[input].previous;
+}
+
+bool InputManager::is(int key, InputBindings input) const {
+    return bindings[input].id == key;
 }
 
 // GLFW Callbacks

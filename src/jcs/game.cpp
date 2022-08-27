@@ -5,7 +5,7 @@
 #include <jcs/texture.hpp>
 #include <stdexcept>
 
-JSGame::JSGame() : renderer{*this}, input_manager{*this} {
+JSGame::JSGame() : renderer{*this}, inputs{*this} {
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -65,7 +65,7 @@ void JSGame::update() {
     }
     frame_counter++;
 
-    input_manager.update();
+    inputs.update();
 
     screen_stack.back()->update();
 }

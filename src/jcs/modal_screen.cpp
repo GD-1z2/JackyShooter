@@ -2,7 +2,8 @@
 #include <jcs/game.hpp>
 #include <jcs/modal_screen.hpp>
 
-ModalScreen::ModalScreen(JSGame &game, std::wstring message, const std::vector<Button> &buttons,
+ModalScreen::ModalScreen(JSGame &game, std::wstring message,
+                         const std::vector<Button> &buttons,
                          int main_button_index) :
     Screen{game}, parent_screen{game.getScreen()}, message{std::move(message)} {
 
@@ -36,15 +37,17 @@ void ModalScreen::render() {
     parent_screen.render();
 
     game.renderer.set2D();
-    game.renderer.useColor({0, 0, 0, .6});
-    game.renderer.setTransform({0, 0, 0}, {game.window_width, game.window_height, 1});
+    game.renderer.gui_shader.useColor({0, 0, 0, .6});
+    game.renderer.setTransform({0, 0, 0},
+                               {game.window_width, game.window_height, 1});
     game.renderer.rect_vbo.draw();
 
     Screen::render(); // draw buttons
 
     game.renderer.clearTransform();
     game.renderer.drawText(message,
-                           (game.window_width - game.renderer.getTextWidth(message, 24)) / 2.f,
+                           (game.window_width -
+                            game.renderer.getTextWidth(message, 24)) / 2.f,
                            game.window_height / 4.f, 24);
 }
 
@@ -62,7 +65,7 @@ void ModalScreen::onFocus() {
 }
 
 bool ModalScreen::onKey(int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    if (game.inputs.is(key, JSINPUT_ESCAPE) && action == GLFW_PRESS) {
         game.removeTopScreen();
         return true;
     }

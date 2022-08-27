@@ -36,7 +36,11 @@ struct GuiShader : public Shader {
 
     void setTexCoordTransform(const glm::mat4 &mat) const;
 
-    void setColor(bool use_color, glm::vec4 color = {1, 1, 1, 1}) const;
+    void useTexture(uint texture_id,
+                    bool use_color = false,
+                    const glm::vec4 &color = {}) const;
+
+    void useColor(glm::vec4 color = {1, 1, 1, 1}) const;
 
     void setClip(const glm::vec4 &clip) const;
 
@@ -45,6 +49,7 @@ struct GuiShader : public Shader {
         view_uniform{},
         projection_uniform{},
         tc_transform_uniform{},
+        use_texture_uniform{},
         use_color_uniform{},
         color_uniform{},
         clip_uniform{};

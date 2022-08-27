@@ -10,6 +10,8 @@ public:
 
     void render() override;
 
+    void onResize() override;
+
     void onFocus() override;
 
     void onClick(int button, int action, int mods) override;

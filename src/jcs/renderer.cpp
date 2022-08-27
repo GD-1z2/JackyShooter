@@ -137,15 +137,6 @@ void Renderer::clearTransform() const {
         world_shader.setModel(glm::mat4{1.f});
 }
 
-void Renderer::useTexture(uint texture) const {
-    glBindTexture(GL_TEXTURE_2D, texture);
-    gui_shader.setColor(false);
-}
-
-void Renderer::useColor(const glm::vec4 &color) const {
-    gui_shader.setColor(true, color);
-}
-
 void Renderer::setClip(const glm::vec4 &clip) const {
     gui_shader.setClip(clip);
 }
@@ -156,10 +147,11 @@ void Renderer::useMaterial(const Material &material) const {
 
 void Renderer::drawText(const std::wstring &text,
                         float x, float y,
-                        float size) const {
+                        float size,
+                        const glm::vec4 &color) const {
     if (0 == size) size = default_font.size;
 
-    useTexture(default_font.texture);
+    gui_shader.useTexture(default_font.texture, true, color);
 
     if (GUI_SHADER == current_shader)
         gui_shader.setTexCoordTransform(glm::mat4{1});
@@ -181,7 +173,7 @@ float Renderer::getTextWidth(const std::wstring &text, float size) const {
     float width{};
 
     const float text_size = (0 == size)
-        ? (size / default_font.size) : 1;
+                            ? (size / default_font.size) : 1;
 
     for (int i{}; i < text.length(); i++)
         width += default_font.getChar(text[i]).x_advance * text_size;

@@ -40,8 +40,8 @@ void GameScreen::update() {
 
     player_controller.update();
 
-    camera.processMouseMovement(game.input_manager.mouse_x_offset,
-                                game.input_manager.mouse_y_offset);
+    camera.processMouseMovement(game.inputs.mouse_x_offset,
+                                game.inputs.mouse_y_offset);
 }
 
 void GameScreen::render() {
@@ -59,30 +59,31 @@ void GameScreen::render() {
 
     game.renderer.useShader(GUI_SHADER);
 
-    chat.render();
+    if (display_overlays) {
+        chat.render();
+    }
 
     Screen::render();
+}
+
+void GameScreen::onResize() {
+    Screen::onResize();
+    chat.updateBuffer();
 }
 
 void GameScreen::onFocus() {
     glfwSetCursorPos(game.window, game.window_width / 2,
                      game.window_height / 2);
     glfwSetInputMode(game.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    game.input_manager.first_mouse = true;
+    game.inputs.first_mouse = true;
 }
 
 void GameScreen::onClick(int button, int action, int mods) {
     Screen::onClick(button, action, mods);
-
-//    MessageWriter msg;
-//    msg.writeShort(SEND_CHAT_MESSAGE);
-//    msg.writeArr<std::wstring>(L"Bonjour, monde");
-//    if (action) ws_connection->send(msg.data(), msg.size());
-chat.addMessage(L"Bonjour le monde ceci est un message long");
 }
 
 bool GameScreen::onKey(int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    if (game.inputs.is(key, JSINPUT_ESCAPE) && GLFW_PRESS == action) {
         game.showScreen(new ModalScreen{game, L"Pause menu", {
             {L"Resume", [](GuiButton &button) {
                 button.screen.game.removeTopScreen();
@@ -104,6 +105,11 @@ bool GameScreen::onKey(int key, int scancode, int action, int mods) {
             }}
         }, 0 /*resume is default button*/});
 
+        return true;
+    }
+
+    if (game.inputs.is(key, JSINPUT_CHAT) && GLFW_PRESS == action) {
+        game.showScreen(new ChatScreen{game, chat});
         return true;
     }
 

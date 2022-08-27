@@ -4,7 +4,7 @@
 #include <jacky-common/types.hpp>
 #include <jcs/defs.hpp>
 
-#define INPUT_COUNT 7
+#define INPUT_COUNT 8
 
 enum InputBindings {
     JSINPUT_FORWARD,
@@ -14,6 +14,7 @@ enum InputBindings {
     JSINPUT_JUMP,
     JSINPUT_CROUCH,
     JSINPUT_ESCAPE,
+    JSINPUT_CHAT,
 };
 
 struct InputBinding {
@@ -34,13 +35,18 @@ public:
 
     [[nodiscard]] int getPreviousInput(InputBindings input) const;
 
+    [[nodiscard]] bool is(int key, InputBindings input) const;
+
     // GLFW Callbacks
 
-    static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+    static void
+    mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 
-    static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void
+    keyCallback(GLFWwindow *window, int key, int scancode, int action,
+                int mods);
 
-    static void charCallback(GLFWwindow* window, uint codepoint);
+    static void charCallback(GLFWwindow *window, uint codepoint);
 
     float
         mouse_x{},

@@ -3,8 +3,9 @@ out vec4 FragColor;
 
 in vec2 oTexCoord;
 
-uniform sampler2D texture_;
+uniform bool useTexture;
 uniform bool useColor;
+uniform sampler2D texture_;
 uniform vec4 color;
 uniform vec4 clip;
 
@@ -18,9 +19,10 @@ void main()
         discard;
     }
 
-    if (useColor) {
-        FragColor = color;
-    } else {
+    if (useTexture) {
         FragColor = texture(texture_, oTexCoord);
+        if (useColor) FragColor *= color;
+    } else {
+        FragColor = color;
     }
 }

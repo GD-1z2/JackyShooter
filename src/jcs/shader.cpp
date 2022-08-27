@@ -97,6 +97,7 @@ GuiShader::GuiShader(const char *vertex_path, const char *fragment_path) :
     view_uniform{glGetUniformLocation(shader_id, "view")},
     projection_uniform{glGetUniformLocation(shader_id, "projection")},
     tc_transform_uniform{glGetUniformLocation(shader_id, "tcTransform")},
+    use_texture_uniform{glGetUniformLocation(shader_id, "useTexture")},
     use_color_uniform{glGetUniformLocation(shader_id, "useColor")},
     color_uniform{glGetUniformLocation(shader_id, "color")},
     clip_uniform{glGetUniformLocation(shader_id, "clip")} {
@@ -118,9 +119,20 @@ void GuiShader::setTexCoordTransform(const glm::mat4 &mat) const {
     glUniformMatrix4fv(tc_transform_uniform, 1, GL_FALSE, &mat[0][0]);
 }
 
-void GuiShader::setColor(bool use_color, glm::vec4 color) const {
-    glUniform1i(use_color_uniform, use_color);
-    glUniform4f(color_uniform, color[0], color[1], color[2], color[3]);
+void GuiShader::useTexture(uint texture_id, bool use_color,
+                           const glm::vec4 &color) const {
+    glUniform1i(use_texture_uniform, 1);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+    if (use_color) {
+        glUniform1i(use_color_uniform, 1);
+        glUniform4fv(color_uniform, 1, &color.r);
+    } else
+        glUniform1i(use_color_uniform, 0);
+}
+
+void GuiShader::useColor(glm::vec4 color) const {
+    glUniform1i(use_texture_uniform, 0);
+    glUniform4fv(color_uniform, 1, &color.r);
 }
 
 void GuiShader::setClip(const glm::vec4 &clip) const {

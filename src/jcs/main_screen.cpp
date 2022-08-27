@@ -53,12 +53,8 @@ MainScreen::MainScreen(JSGame &game) :
                  1.f); // horrible pink
 
 
-    std::vector<float> title_buff(12 * 30);
-    game.renderer.default_font.writeStringDataRightAligned(
-        title_buff.data(), L"Jacky", game.window_width - 48, 0, 36);
-    game.renderer.default_font.writeStringDataRightAligned(
-        title_buff.data() + 5 * 30, L"Shooter", game.window_width - 48, 48, 48);
-    title_vbo = VertexBuffer{title_buff};
+    title_vbo = VertexBuffer{VertexBuffer::BUF_DYN};
+    MainScreen::onResize();
 }
 
 MainScreen::~MainScreen() {
@@ -95,14 +91,15 @@ bool MainScreen::onKey(int key, int scancode, int action, int mods) {
     if (Screen::onKey(key, scancode, action, mods))
         return true;
 
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    if (game.inputs.is(key, JSINPUT_ESCAPE) && action == GLFW_PRESS) {
         game.showScreen(
             new ModalScreen{game, L"Are you sure you want to quit?", {
                 {L"Yes", [](GuiButton &button) {
                     glfwSetWindowShouldClose(button.screen.game.window, true);
                 }},
                 {L"Cancel",
-                 [](GuiButton &button) { button.screen.game.removeTopScreen(); }},
+                 [](GuiButton &button) { button.screen.game.removeTopScreen(); }
+                },
             }, 0});
         return true;
     }
@@ -112,4 +109,17 @@ bool MainScreen::onKey(int key, int scancode, int action, int mods) {
 
 void MainScreen::onChar(uint codepoint) {
     Screen::onChar(codepoint);
+}
+
+void MainScreen::onResize() {
+    Screen::onResize();
+
+    std::vector<float> title_buff(12 * 30);
+    game.renderer.default_font.writeStringDataRightAligned(
+        title_buff.data(), L"Jacky", game.window_width - 48, 0,
+        36);
+    game.renderer.default_font.writeStringDataRightAligned(
+        title_buff.data() + 5 * 30, L"Shooter", game.window_width - 48, 48,
+        48);
+    title_vbo.load(title_buff);
 }

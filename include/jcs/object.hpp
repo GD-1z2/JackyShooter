@@ -4,9 +4,16 @@
 #include <vector>
 
 struct VertexBuffer {
+    enum Type {
+        BUF_STATIC, BUF_DYN
+    };
+
     VertexBuffer() = default;
 
-    explicit VertexBuffer(const std::vector<float> &vertices);
+    explicit VertexBuffer(Type type,
+                          const std::vector<float> *vertices = nullptr);
+
+    void load(const std::vector<float> &vertices);
 
     void draw() const;
 

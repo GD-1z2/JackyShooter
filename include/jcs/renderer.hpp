@@ -49,16 +49,6 @@ public:
     /**
      * @note GUI shader only
      */
-    void useTexture(uint texture) const;
-
-    /**
-     * @note GUI shader only
-     */
-    void useColor(const glm::vec4 &color) const;
-
-    /**
-     * @note GUI shader only
-     */
     void setClip(const glm::vec4 &clip) const;
 
     /**
@@ -66,8 +56,8 @@ public:
      */
     void useMaterial(const Material &material) const;
 
-    void
-    drawText(const std::wstring &text, float x, float y, float size = 0) const;
+    void drawText(const std::wstring &text, float x, float y, float size = 0,
+                  const glm::vec4 &color = {1, 1, 1, 1}) const;
 
     float getTextWidth(const std::wstring &text, float size = 0) const;
 

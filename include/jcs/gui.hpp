@@ -9,8 +9,12 @@ class Screen;
 struct GuiObject {
     typedef void (*ResizeHandler)(GuiObject &);
 
-    GuiObject(Screen &screen, float x, float y, float width, float height, ResizeHandler resize_handler) :
-        screen{screen}, x{x}, y{y}, width{width}, height{height}, resize_handler{resize_handler} {
+    GuiObject(Screen &screen,
+              float x, float y,
+              float width, float height,
+              ResizeHandler resize_handler) :
+        screen{screen}, x{x}, y{y}, width{width}, height{height},
+        resize_handler{resize_handler} {
         resize_handler(*this);
     }
 
@@ -38,9 +42,11 @@ struct GuiObject {
 struct GuiButton : public GuiObject {
     typedef void (*ClickHandler)(GuiButton &);
 
-    GuiButton(Screen &screen, float x, float y, float width, float height, ResizeHandler resize_handler,
+    GuiButton(Screen &screen, float x, float y, float width, float height,
+              ResizeHandler resize_handler,
               ClickHandler click_handler) :
-        GuiObject{screen, x, y, width, height, resize_handler}, click_handler{click_handler} {}
+        GuiObject{screen, x, y, width, height, resize_handler},
+        click_handler{click_handler} {}
 
     void onClick(int button, int action, int mods) override;
 
@@ -50,8 +56,9 @@ struct GuiButton : public GuiObject {
 };
 
 struct GuiTextButton : public GuiButton {
-    GuiTextButton(Screen &screen, float x, float y, float width, float height, ResizeHandler resize_handler,
-                  ClickHandler click_handler, const std::wstring& text);
+    GuiTextButton(Screen &screen, float x, float y, float width, float height,
+                  ResizeHandler resize_handler,
+                  ClickHandler click_handler, const std::wstring &text);
 
     void render() override;
 
@@ -62,7 +69,8 @@ struct GuiTextButton : public GuiButton {
 struct GuiTextInput : public GuiObject {
     typedef void (*ChangeHandler)(GuiTextInput &, uint);
 
-    GuiTextInput(Screen &screen, float x, float y, float width, float height, ResizeHandler resize_handler,
+    GuiTextInput(Screen &screen, float x, float y, float width, float height,
+                 ResizeHandler resize_handler,
                  ChangeHandler change_handler);
 
     void render() override;
