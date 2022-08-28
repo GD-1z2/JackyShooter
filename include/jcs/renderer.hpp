@@ -42,6 +42,11 @@ public:
     void setTransform(glm::vec3 pos, glm::vec3 scale) const;
 
     /**
+     * Sets model matrix with rotation.
+     */
+    void setTransform(glm::vec3 pos, glm::vec3 scale, glm::vec3 rot) const;
+
+    /**
      * Sets model matrix to identity.
      */
     void clearTransform() const;
@@ -70,7 +75,7 @@ public:
 
     glm::mat4 proj_3d{}, proj_2d{}, view{};
     IndexedVertexBuffer rect_vbo{};
-    Model gun_model{*this};
+    Model player_model{*this}, gun_model{*this};
     uint text_vao{}, text_vbo{};
     uint button_texture{};
     uint skybox_texture{};

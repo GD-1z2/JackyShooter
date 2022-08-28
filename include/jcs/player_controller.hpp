@@ -11,9 +11,11 @@ public:
 
     void update();
 
+
+    glm::vec3 position;
+
 private:
     JSGame &game;
     Camera &camera;
-    glm::vec3 position;
     float speed;
 };

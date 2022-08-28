@@ -55,6 +55,12 @@ void GameScreen::render() {
     game.renderer.setTransform({0, 0, -3}, {.1, .1, .1});
     game.renderer.gun_model.draw();
 
+    if (Camera::THIRDP == camera.mode) {
+        game.renderer.setTransform(player_controller.position, {1, 1, 1},
+                                   {0, -camera.yaw + 90, 0});
+        game.renderer.player_model.draw();
+    }
+
     skybox.draw(glm::lookAt(glm::vec3{}, camera.front, camera.up));
 
     game.renderer.useShader(GUI_SHADER);

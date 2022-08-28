@@ -12,10 +12,12 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 }
 
 glm::mat4 Camera::getViewMatrix() const {
+    static const int THP_VIEW_DST = 5;
+
     if (NORMAL == mode)
         return glm::lookAt(position, position + front, up);
     else
-        return glm::lookAt(position - front * glm::vec3{3, 3, 3}, position, up);
+        return glm::lookAt(position - front * glm::vec3{THP_VIEW_DST}, position, up);
 }
 
 void Camera::processMouseMovement(float x_offset, float y_offset) {

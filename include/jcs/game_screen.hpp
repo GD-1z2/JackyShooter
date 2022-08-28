@@ -35,10 +35,12 @@ public:
     bool display_overlays{true};
 
 private:
-    PlayerController player_controller;
-    Camera camera;
     Chat chat;
     SkyBox skybox;
+
+    PlayerController player_controller;
+    Camera camera;
+
     WsClient ws_client;
     WsClient::connection_ptr ws_connection;
     std::thread ws_thread;

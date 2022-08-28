@@ -33,6 +33,7 @@ void Renderer::init() {
 
     rect_vbo = {RECTANGLE_VERTICES, RECTANGLE_INDICES};
 
+    ModelLoader{"assets/models/player/player.obj", player_model}.load();
     ModelLoader{"assets/models/gun0/gun0.obj", gun_model}.load();
 
     glGenVertexArrays(1, &text_vao);
@@ -122,12 +123,25 @@ void Renderer::useShader(ShaderType type) {
 }
 
 void Renderer::setTransform(glm::vec3 pos, glm::vec3 scale) const {
+    const auto model = glm::scale(glm::translate(glm::mat4{1.f}, pos), scale);
     if (GUI_SHADER == current_shader)
-        gui_shader.setModel(
-            glm::scale(glm::translate(glm::mat4{1.f}, pos), scale));
+        gui_shader.setModel(model);
     else
-        world_shader.setModel(
-            glm::scale(glm::translate(glm::mat4{1.f}, pos), scale));
+        world_shader.setModel(model);
+}
+
+void
+Renderer::setTransform(glm::vec3 pos, glm::vec3 scale, glm::vec3 rot) const {
+    auto model = glm::translate(glm::mat4{1.f}, pos);
+    model = glm::rotate(model, glm::radians(rot.x), glm::vec3{1, 0, 0});
+    model = glm::rotate(model, glm::radians(rot.y), glm::vec3{0, 1, 0});
+    model = glm::rotate(model, glm::radians(rot.z), glm::vec3{0, 0, 1});
+    model = glm::scale(model, scale);
+
+    if (GUI_SHADER == current_shader)
+        gui_shader.setModel(model);
+    else
+        world_shader.setModel(model);
 }
 
 void Renderer::clearTransform() const {

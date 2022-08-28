@@ -25,5 +25,5 @@ void PlayerController::update() {
     if (game.inputs.getInput(JSINPUT_CROUCH))
         position.y -= distance;
 
-    camera.position = position;
+    camera.position = position + glm::vec3{0, 1.75f, 0};
 }

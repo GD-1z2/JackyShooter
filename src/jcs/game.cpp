@@ -23,7 +23,7 @@ JSGame::JSGame() : renderer{*this}, inputs{*this} {
 
     glfwSetWindowUserPointer(window, this);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(0);
+//    glfwSwapInterval(0);
 
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window_, int width,
                                               int height) {
