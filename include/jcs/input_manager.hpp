@@ -4,7 +4,7 @@
 #include <jacky-common/types.hpp>
 #include <jcs/defs.hpp>
 
-#define INPUT_COUNT 8
+#define INPUT_COUNT 9
 
 enum InputBindings {
     JSINPUT_FORWARD,
@@ -15,6 +15,7 @@ enum InputBindings {
     JSINPUT_CROUCH,
     JSINPUT_ESCAPE,
     JSINPUT_CHAT,
+    JSINPUT_CAMERA_MODE,
 };
 
 struct InputBinding {

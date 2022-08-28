@@ -113,6 +113,11 @@ bool GameScreen::onKey(int key, int scancode, int action, int mods) {
         return true;
     }
 
+    if (game.inputs.is(key, JSINPUT_CAMERA_MODE) && GLFW_PRESS == action) {
+        camera.switchMode();
+        return true;
+    }
+
     return false;
 }
 

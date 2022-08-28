@@ -16,7 +16,6 @@
 
 ## Roadmap
 
-- Add 3rd person camera
 - Add player model
 - Sync position with server & other players
 - Add ability to hold objects

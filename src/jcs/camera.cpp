@@ -12,7 +12,10 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) :
 }
 
 glm::mat4 Camera::getViewMatrix() const {
-    return glm::lookAt(position, position + front, up);
+    if (NORMAL == mode)
+        return glm::lookAt(position, position + front, up);
+    else
+        return glm::lookAt(position - front * glm::vec3{3, 3, 3}, position, up);
 }
 
 void Camera::processMouseMovement(float x_offset, float y_offset) {
@@ -40,4 +43,8 @@ void Camera::updateVectors() {
     );
     right = glm::normalize(glm::cross(front, {0, 1, 0}));
     up = glm::normalize(glm::cross(right, front));
+}
+
+void Camera::switchMode() {
+    mode = (mode == NORMAL) ? THIRDP : NORMAL;
 }
