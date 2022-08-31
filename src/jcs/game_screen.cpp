@@ -2,18 +2,20 @@
 #include <jacky-common/server_actions.hpp>
 #include <jcs/game.hpp>
 #include <jcs/game_screen.hpp>
+#include <jcs/info_screen.hpp>
 #include <jcs/main_screen.hpp>
 #include <jcs/modal_screen.hpp>
 
-GameScreen::GameScreen(JSGame &game, const std::string &uri) :
+GameScreen::GameScreen(JSGame &game, const AllowJoinData &join_data) :
     Screen{game},
     camera{},
     player_controller{game, camera},
     chat{game},
     skybox{game.renderer, game.renderer.skybox_texture} {
 
-    if (!connect(uri))
-        throw std::runtime_error{"WebSocket connection failed"};
+    for (const auto &name: join_data.online_players)
+        game.game_state.players.push_back({name, false});
+    player_controller.position = join_data.spawn_pos;
 
     glClearColor(0, 0, 0, 1);
 
@@ -24,24 +26,46 @@ GameScreen::~GameScreen() = default;
 
 void GameScreen::update() {
     {
-        ws::lib::unique_lock<ws::lib::mutex> lock{actions_queue_lock};
+        ws::lib::unique_lock<ws::lib::mutex> lock{
+            game.connection->actions_lock};
 
-        while (!actions_queue.empty()) {
-            const ClientAction action = std::move(actions_queue.front());
-            actions_queue.pop();
+        while (!game.connection->actions.empty()) {
+            const ClientAction action = std::move(
+                game.connection->actions.front());
+            game.connection->actions.pop();
 
-            if (ADD_CHAT_MESSAGE == action.type)
+            if (ADD_CHAT_MESSAGE == action.type) {
                 chat.addMessage(std::get<std::unique_ptr<AddChatMessageData>>(
                     action.data)->message);
+
+            } else if (PLAYER_LIST_ADD == action.type) {
+                const auto &data = action.get<PlayerListAddData>();
+                game.game_state.players.push_back({data->name, false});
+                chat.addMessage(data->name + L" a rejoint le serveur");
+
+            } else if (PLAYER_LIST_RMV == action.type) {
+                const auto &data = action.get<PlayerListRmvData>();
+                const auto it = std::find_if(game.game_state.players.begin(),
+                                             game.game_state.players.end(),
+                                             [&data](const ClientPlayer &p) {
+                                                 return p.name == data->name;
+                                             });
+                if (it != game.game_state.players.end()) {
+                    game.game_state.players.erase(it);
+                    chat.addMessage(data->name + L" a quitté le serveur");
+                }
+            }
         }
     }
 
     Screen::update();
 
-    player_controller.update();
+    if (game.isTopScreen(this)) {
+        player_controller.update();
 
-    camera.processMouseMovement(game.inputs.mouse_x_offset,
-                                game.inputs.mouse_y_offset);
+        camera.processMouseMovement(game.inputs.mouse_x_offset,
+                                    game.inputs.mouse_y_offset);
+    }
 }
 
 void GameScreen::render() {
@@ -96,18 +120,10 @@ bool GameScreen::onKey(int key, int scancode, int action, int mods) {
                 throw std::runtime_error{"bad programming"};
             }},
             {L"Disconnect", [](GuiButton &button) {
-                auto &screen = reinterpret_cast<GameScreen &>(
-                    reinterpret_cast<ModalScreen &>(button.screen).parent_screen
-                );
-
-                // Terminate connection
-                if (screen.ws_connection->get_state() ==
-                    ws::session::state::open)
-                    screen.ws_connection->close(ws::close::status::normal,
-                                                "Disconnect");
-                screen.ws_thread.join();
-
-                screen.game.showScreen(new MainScreen{screen.game}, true);
+                button.screen.game.connection->disconnect();
+                button.screen.game.showScreen(
+                    new MainScreen{button.screen.game}, true);
+                throw std::runtime_error{"bad programming"};
             }}
         }, 0 /*resume is default button*/});
 
@@ -116,6 +132,11 @@ bool GameScreen::onKey(int key, int scancode, int action, int mods) {
 
     if (game.inputs.is(key, JSINPUT_CHAT) && GLFW_PRESS == action) {
         game.showScreen(new ChatScreen{game, chat});
+        return true;
+    }
+
+    if (game.inputs.is(key, JSINPUT_INFO) && GLFW_PRESS == action) {
+        game.showScreen(new InfoScreen{game});
         return true;
     }
 

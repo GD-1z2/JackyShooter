@@ -56,9 +56,11 @@ struct GuiButton : public GuiObject {
 };
 
 struct GuiTextButton : public GuiButton {
-    GuiTextButton(Screen &screen, float x, float y, float width, float height,
+    GuiTextButton(Screen &screen,
+                  float x, float y, float width, float height,
                   ResizeHandler resize_handler,
-                  ClickHandler click_handler, const std::wstring &text);
+                  ClickHandler click_handler,
+                  const std::wstring &text);
 
     void render() override;
 

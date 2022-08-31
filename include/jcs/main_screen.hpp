@@ -4,8 +4,6 @@ class MainScreen : public Screen {
 public:
     explicit MainScreen(JSGame &game);
 
-    ~MainScreen() override;
-
     void update() override;
 
     void render() override;
@@ -21,7 +19,7 @@ public:
     void onChar(uint codepoint) override;
 
 private:
-    GuiTextButton *play_button;
-    GuiTextInput *ip_input, *name_input;
+    GuiTextButton play_button;
+    GuiTextInput ip_input;
     VertexBuffer title_vbo;
 };

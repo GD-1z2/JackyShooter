@@ -1,8 +1,8 @@
 #pragma once
 
-#include <jacky-common/types.hpp>
-#include <vector>
+#include <jacky-common/defs.hpp>
 #include <string>
+#include <vector>
 
 struct Vertex {
     float x, y, z;

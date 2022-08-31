@@ -1,4 +1,4 @@
-#include "glad/glad.hpp"
+#include <glad/glad.hpp>
 
 #include <fstream>
 #include <iostream>

@@ -1,4 +1,5 @@
-#include "glad/glad.hpp"
+#include <glad/glad.hpp>
+
 #include <jcs/texture.hpp>
 #include <stb/stb_image.hpp>
 #include <stdexcept>

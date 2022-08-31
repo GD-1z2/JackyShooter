@@ -10,6 +10,7 @@ InputManager::InputManager(JSGame &game) : game{game}, bindings{
     {GLFW_KEY_LEFT_SHIFT}, // JSINPUT_CROUCH
     {GLFW_KEY_ESCAPE},     // JSINPUT_ESCAPE
     {GLFW_KEY_T},          // JSINPUT_CHAT
+    {GLFW_KEY_F},          // JSINPUT_INFO
     {GLFW_KEY_C},          // JSINPUT_CAMERA_MODE
 } {}
 

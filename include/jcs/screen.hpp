@@ -29,7 +29,8 @@ public:
     }
 
     /**
-     * Called when the screen becomes topmost after screen removal.
+     * Called when the screen is added or becomes topmost after another screen's
+     * removal.
      */
     virtual void onFocus() {}
 
@@ -46,12 +47,14 @@ public:
                 return false;
 
             if (mods & GLFW_MOD_SHIFT) {
-                auto o = std::find(gui_objects.begin(), gui_objects.end(), focused_object) - 1;
+                auto o = std::find(gui_objects.begin(), gui_objects.end(),
+                                   focused_object) - 1;
                 if (o < gui_objects.begin())
                     o = gui_objects.end() - 1;
                 focusObject(*o);
             } else {
-                auto o = std::find(gui_objects.begin(), gui_objects.end(), focused_object) + 1;
+                auto o = std::find(gui_objects.begin(), gui_objects.end(),
+                                   focused_object) + 1;
                 if (o >= gui_objects.end())
                     o = gui_objects.begin();
                 focusObject(*o);

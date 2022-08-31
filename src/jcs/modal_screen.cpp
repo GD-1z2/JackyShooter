@@ -6,6 +6,7 @@ ModalScreen::ModalScreen(JSGame &game, std::wstring message,
                          const std::vector<Button> &buttons,
                          int main_button_index) :
     Screen{game}, parent_screen{game.getScreen()}, message{std::move(message)} {
+    assert(!buttons.empty() && "modal should have at least one button");
 
     for (int i{0}; i < buttons.size(); i++) {
         const auto &[button_message, click_handler] = buttons[i];
@@ -30,6 +31,7 @@ ModalScreen::ModalScreen(JSGame &game, std::wstring message,
 }
 
 void ModalScreen::update() {
+    parent_screen.update();
     Screen::update();
 }
 

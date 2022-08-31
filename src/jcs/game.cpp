@@ -1,4 +1,4 @@
-#include "glad/glad.hpp"
+#include <glad/glad.hpp>
 #include <jcs/game.hpp>
 #include <jcs/input_manager.hpp>
 #include <jcs/main_screen.hpp>
@@ -101,6 +101,10 @@ void JSGame::removeTopScreen() {
         screen_stack.push_back(new MainScreen{*this});
 
     screen_stack.back()->onFocus();
+}
+
+bool JSGame::isTopScreen(Screen *screen) {
+    return screen_stack.back() == screen;
 }
 
 Screen &JSGame::getScreen() const {

@@ -24,12 +24,14 @@ public:
     [[noreturn]] void processMessages();
 
     WsServer ws_server;
-
-private:
     PlayerList player_list;
+private:
     ws::lib::mutex player_list_lock;
 
     std::queue<ServerAction> actions_queue;
     ws::lib::mutex actions_queue_lock;
     ws::lib::condition_variable actions_queue_cond;
+
+    std::vector<ws::connection_hdl> pending_conns;
+    ws::lib::mutex pending_conns_lock;
 };

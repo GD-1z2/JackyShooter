@@ -113,7 +113,8 @@ void Chat::render() const {
     game.renderer.setTransform(
         {10, game.window_height - chat_height + anim_offset, 0}, {1, 1, 1});
     game.renderer.gui_shader.useTexture(
-        game.renderer.default_font.texture, true, glm::vec4{1, 1, 1, .5});
+        game.renderer.default_font.texture, true,
+        glm::vec4{1, 1, 1, chat_screen_opened ? 1 : .5});
 
     glDrawArrays(GL_TRIANGLES, 0, triangle_count);
 
@@ -150,6 +151,10 @@ ChatScreen::~ChatScreen() {
 void ChatScreen::update() {
     if (!can_type && GLFW_RELEASE == game.inputs.getInput(JSINPUT_CHAT))
         can_type = true;
+
+    parent_screen.update();
+
+    Screen::update();
 }
 
 void ChatScreen::render() {
@@ -188,7 +193,7 @@ bool ChatScreen::onKey(int key, int scancode, int action, int mods) {
 
     if (GLFW_KEY_ENTER == key && GLFW_PRESS == action) {
         if (textInput.value.length()) {
-            chat.addMessage(textInput.value);
+            game.connection->sendChatMessage(textInput.value);
             textInput.value = L"";
             return true;
         } else {

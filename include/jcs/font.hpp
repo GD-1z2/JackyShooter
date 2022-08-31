@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/vec2.hpp>
-#include <jacky-common/types.hpp>
+#include <jacky-common/defs.hpp>
 #include <string>
 #include <unordered_map>
 

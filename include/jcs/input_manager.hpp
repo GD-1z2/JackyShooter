@@ -1,10 +1,10 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <jacky-common/types.hpp>
+#include <jacky-common/defs.hpp>
 #include <jcs/defs.hpp>
 
-#define INPUT_COUNT 9
+#define INPUT_COUNT 10
 
 enum InputBindings {
     JSINPUT_FORWARD,
@@ -15,6 +15,7 @@ enum InputBindings {
     JSINPUT_CROUCH,
     JSINPUT_ESCAPE,
     JSINPUT_CHAT,
+    JSINPUT_INFO,
     JSINPUT_CAMERA_MODE,
 };
 

@@ -2,7 +2,6 @@
 
 #include <jacky-common/client_actions.hpp>
 #include <jacky-common/defs.hpp>
-#include <jacky-common/types.hpp>
 #include <jcs/camera.hpp>
 #include <jcs/chat.hpp>
 #include <jcs/player_controller.hpp>
@@ -11,7 +10,7 @@
 
 class GameScreen : public Screen {
 public:
-    GameScreen(JSGame &game, const std::string &uri);
+    GameScreen(JSGame &game, const AllowJoinData& join_data);
 
     ~GameScreen() override;
 
@@ -30,20 +29,11 @@ public:
     void onChar(uint codepoint) override;
 
 
-    bool connect(const std::string &uri);
-
     bool display_overlays{true};
-
 private:
     Chat chat;
     SkyBox skybox;
 
     PlayerController player_controller;
     Camera camera;
-
-    WsClient ws_client;
-    WsClient::connection_ptr ws_connection;
-    std::thread ws_thread;
-    std::queue<ClientAction> actions_queue;
-    ws::lib::mutex actions_queue_lock;
 };

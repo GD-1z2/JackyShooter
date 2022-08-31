@@ -2,9 +2,9 @@
 
 #include <cstring>
 #include <iostream>
-#include <jacky-common/types.hpp>
-#include <vector>
+#include <jacky-common/defs.hpp>
 #include <netinet/in.h>
+#include <vector>
 
 class MessageWriter {
 public:
@@ -24,9 +24,8 @@ public:
         vec.push_back(val & 0xFF);
     }
 
-    void writeString(const std::string &str) {
-        writeInt(str.size());
-        vec.insert(vec.end(), str.begin(), str.end());
+    void writeFloat(float val) {
+        writeInt(*reinterpret_cast<const u32*>(&val));
     }
 
     template<typename T>
@@ -46,5 +45,5 @@ public:
     }
 
 private:
-    std::vector<u8> vec;
+    std::vector<u8> vec{};
 };

@@ -12,7 +12,8 @@ public:
      *
      * @note Must be created with a parent screen
      */
-    ModalScreen(JSGame &game, std::wstring message, const std::vector<Button> &buttons, int main_button_index = -1);
+    ModalScreen(JSGame &game, std::wstring message,
+                const std::vector<Button> &buttons, int main_button_index = -1);
 
     void update() override;
 

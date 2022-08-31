@@ -1,4 +1,4 @@
-#include "glad/glad.hpp"
+#include <glad/glad.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <jcs/font_loader.hpp>
@@ -184,10 +184,9 @@ void Renderer::drawText(const std::wstring &text,
 }
 
 float Renderer::getTextWidth(const std::wstring &text, float size) const {
-    float width{};
+    const float text_size = (0 == size) ? 1 : size / default_font.size;
 
-    const float text_size = (0 == size)
-                            ? (size / default_font.size) : 1;
+    float width{};
 
     for (int i{}; i < text.length(); i++)
         width += default_font.getChar(text[i]).x_advance * text_size;

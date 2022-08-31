@@ -7,7 +7,7 @@ class JSGame;
 
 class PlayerController {
 public:
-    explicit PlayerController(JSGame &game, Camera &camera);
+    PlayerController(JSGame &game, Camera &camera);
 
     void update();
 

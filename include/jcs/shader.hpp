@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <jacky-common/types.hpp>
+#include <jacky-common/defs.hpp>
 #include <jcs/model.hpp>
 #include <string>
 

@@ -1,55 +1,65 @@
 #pragma once
 
 #include <cstring>
-#include <jacky-common/types.hpp>
+#include <jacky-common/defs.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 class MessageReader {
 public:
-    explicit MessageReader(const std::string &message) : message{message} {}
+    explicit MessageReader(const std::string &message) :
+        data{(u8 *) message.data()}, msg_size{message.size()} {}
 
     u8 readByte() {
-        if (pos >= message.size()) {
+        if (pos >= msg_size)
             throw std::runtime_error("MessageReader: readByte: end of message");
-        }
-        return message[pos++];
+
+        return data[pos++];
     }
 
     u16 readShort() {
-        if (pos + 2 > message.size()) {
+        if (pos + 2 > msg_size)
             throw std::runtime_error(
                 "MessageReader: readShort: end of message");
-        }
-        const u16 val = (message[pos] << 8) | message[pos + 1];
+
+        const u16 val = (data[pos] << 8) | data[pos + 1];
         pos += 2;
         return val;
     }
 
     u32 readInt() {
-        if (pos + 4 > message.size()) {
+        if (pos + 4 > msg_size)
             throw std::runtime_error("MessageReader: readInt: end of message");
-        }
-        const u32 val = (message[pos] << 24) | (message[pos + 1] << 16) |
-                        (message[pos + 2] << 8) | message[pos + 3];
+
+        const u32 val = (data[pos] << 24) | (data[pos + 1] << 16) |
+                        (data[pos + 2] << 8) | data[pos + 3];
         pos += 4;
         return val;
+    }
+
+    float readFloat() {
+        if (pos + 4 > msg_size)
+            throw std::runtime_error(
+                "MessageReader: readFloat: end of message");
+
+        const u32 i = readInt();
+        return *reinterpret_cast<const float *>(&i);
     }
 
     template<typename T>
     T readArr() {
         const uint
             size = readInt(),
-            len = (size / sizeof(typename T::value_type));
+            len = size / sizeof(typename T::value_type);
 
-        if (pos + size > message.size())
+        if (pos + size > msg_size)
             throw std::runtime_error{"Incomplete message"};
 
         T arr;
         arr.resize(len);
 
-        std::memcpy(arr.data(), message.data() + pos, size);
+        std::memcpy(arr.data(), data + pos, size);
 
         pos += size;
 
@@ -57,6 +67,6 @@ public:
     }
 
 private:
-    const std::string &message;
-    size_t pos{};
+    u8 *data;
+    size_t msg_size{}, pos{};
 };
