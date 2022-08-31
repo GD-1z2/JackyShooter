@@ -15,6 +15,8 @@ public:
 
     void sendChatMessage(const std::wstring &message);
 
+    void syncPos(const glm::vec3 &pos, float yaw);
+
     WsClient ws_client;
     WsClient::connection_ptr ws_connection;
     std::thread ws_thread;

@@ -31,7 +31,9 @@ Connection::Connection(const std::string &uri) {
             const ws::connection<ws::config::asio_client>::message_ptr &msg) {
 
             const auto &msg_s = msg->get_payload();
-            std::cout << msg_s << std::endl;
+            // dont print pos packets
+            if (msg_s.size() < 2 || msg_s[0] == 0 && msg_s[1] == 2)
+                std::cout << msg_s << std::endl;
 
             if (msg_s.length() < 2) // Not enough space for packet ID
                 return;
@@ -79,6 +81,24 @@ Connection::Connection(const std::string &uri) {
                 const auto name = reader.readArr<std::wstring>();
                 ws::lib::lock_guard<ws::lib::mutex> guard{actions_lock};
                 actions.push(PlayerListRmvData::make(name));
+
+            } else if (PLAYER_LIST_SET_POS == type) {
+                const u16 pl_cnt = reader.readShort();
+                std::vector<PlayerListSetPosData::PlData> pos_list;
+                pos_list.reserve(pl_cnt);
+
+                for (u16 i = 0; i < pl_cnt; ++i) {
+                    const auto name = reader.readArr<std::wstring>();
+                    const glm::vec3 pos{reader.readFloat(), reader.readFloat(),
+                                        reader.readFloat()};
+                    const float yaw{reader.readFloat()};
+                    pos_list.push_back(PlayerListSetPosData::PlData{
+                        name, pos, yaw
+                    });
+                }
+
+                ws::lib::lock_guard<ws::lib::mutex> guard{actions_lock};
+                actions.push(PlayerListSetPosData::make(pos_list));
             }
         });
 
@@ -114,5 +134,15 @@ void Connection::sendChatMessage(const std::wstring &message) {
     MessageWriter msg{};
     msg.writeShort(ADD_CHAT_MESSAGE);
     msg.writeArr(message);
+    ws_connection->send(msg.data(), msg.size(), ws::frame::opcode::binary);
+}
+
+void Connection::syncPos(const glm::vec3 &pos, float yaw) {
+    MessageWriter msg;
+    msg.writeShort(UPDATE_PLAYER_POS);
+    msg.writeFloat(pos.x);
+    msg.writeFloat(pos.y);
+    msg.writeFloat(pos.z);
+    msg.writeFloat(yaw);
     ws_connection->send(msg.data(), msg.size(), ws::frame::opcode::binary);
 }

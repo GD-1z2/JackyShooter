@@ -104,12 +104,23 @@ void Server::onMessage(const ws::connection_hdl &hdl,
             actions_queue.push(SendChatMessageData::make(
                 player_list.byConnection(hdl), std::move(player_message)));
         }
+    } else if (UPDATE_PLAYER_POS == message_type) {
+        glm::vec3 pos{reader.readFloat(), reader.readFloat(),
+                      reader.readFloat()};
+        float yaw{reader.readFloat()};
+
+        ws::lib::lock_guard<ws::lib::mutex> guard{actions_queue_lock};
+        actions_queue.push(UpdatePlayerPosData::make(
+            player_list.byConnection(hdl), pos, yaw
+        ));
     }
 
     actions_queue_cond.notify_one();
 }
 
 [[noreturn]] void Server::processMessages() {
+    auto last_pos_sync = std::chrono::high_resolution_clock::now();
+
     while (true) {
         ws::lib::unique_lock<ws::lib::mutex> lock{actions_queue_lock};
 
@@ -232,8 +243,35 @@ void Server::onMessage(const ws::connection_hdl &hdl,
 
             for (const auto &player: player_list)
                 player.connection->send(msg.data(), msg.size());
+
+        } else if (action.type == UPDATE_PLAYER_POS) {
+            auto &data = action.get<UpdatePlayerPosData>();
+            ws::lib::lock_guard<ws::lib::mutex> guard{player_list_lock};
+            action.player->x = data->pos.x;
+            action.player->y = data->pos.y;
+            action.player->z = data->pos.z;
+            action.player->yaw = data->yaw;
         }
 
         next_action:;
+
+        const auto now = std::chrono::high_resolution_clock::now();
+        using namespace std::chrono_literals;
+        if (now > last_pos_sync + POS_SYNC_DURATION) {
+            MessageWriter msg;
+            msg.writeShort(PLAYER_LIST_SET_POS);
+            msg.writeShort(player_list.size());
+            for (const auto &player: player_list) {
+                msg.writeArr(player.name);
+                msg.writeFloat(player.x);
+                msg.writeFloat(player.y);
+                msg.writeFloat(player.z);
+                msg.writeFloat(player.yaw);
+            }
+            for (const auto &player: player_list)
+                player.connection->send(msg.data(), msg.size());
+
+            last_pos_sync = now;
+        }
     }
 }

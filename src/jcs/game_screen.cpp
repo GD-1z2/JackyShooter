@@ -25,6 +25,8 @@ GameScreen::GameScreen(JSGame &game, const AllowJoinData &join_data) :
 GameScreen::~GameScreen() = default;
 
 void GameScreen::update() {
+    const auto now = std::chrono::high_resolution_clock::now();
+
     {
         ws::lib::unique_lock<ws::lib::mutex> lock{
             game.connection->actions_lock};
@@ -54,8 +56,45 @@ void GameScreen::update() {
                     game.game_state.players.erase(it);
                     chat.addMessage(data->name + L" a quitté le serveur");
                 }
+
+            } else if (PLAYER_LIST_SET_POS == action.type) {
+                const auto &data = action.get<PlayerListSetPosData>();
+                for (const auto &pld: data->player_positions) {
+                    if (pld.name == game.game_state.name)
+                        continue;
+                    const auto it = std::find_if(
+                        game.game_state.players.begin(),
+                        game.game_state.players.end(),
+                        [&pld](const ClientPlayer &p) {
+                            return p.name == pld.name;
+                        });
+                    if (it != game.game_state.players.end()) {
+                        it->visible = true;
+                        it->base_pos = it->position;
+                        it->target_pos = pld.pos;
+                        it->base_yaw = it->yaw;
+                        it->target_yaw = pld.yaw;
+                    }
+                }
+
+                last_pos_sync_s = now;
             }
         }
+    }
+
+    using namespace std::chrono_literals;
+    if (now > last_pos_sync_c + POS_SYNC_DURATION) {
+        game.connection->syncPos(player_controller.position, camera.yaw);
+        last_pos_sync_c = now;
+    }
+
+    for (auto &p: game.game_state.players) {
+        if (!p.visible)
+            continue;
+        const float progress = std::chrono::duration<float>(now - last_pos_sync_s)
+                                   .count() * 1000 / POS_SYNC_DEL;
+        p.position = glm::mix(p.base_pos, p.target_pos, progress);
+        p.yaw = glm::mix(p.base_yaw, p.target_yaw, progress);
     }
 
     Screen::update();
@@ -78,6 +117,13 @@ void GameScreen::render() {
 
     game.renderer.setTransform({0, 0, -3}, {.1, .1, .1});
     game.renderer.gun_model.draw();
+
+    for (const auto &p: game.game_state.players) {
+        if (p.name == game.game_state.name || !p.visible)
+            continue;
+        game.renderer.setTransform(p.position, {1, 1, 1}, {0, -p.yaw + 90, 0});
+        game.renderer.player_model.draw();
+    }
 
     if (Camera::THIRDP == camera.mode) {
         game.renderer.setTransform(player_controller.position, {1, 1, 1},

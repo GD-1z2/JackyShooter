@@ -10,7 +10,7 @@
 
 class GameScreen : public Screen {
 public:
-    GameScreen(JSGame &game, const AllowJoinData& join_data);
+    GameScreen(JSGame &game, const AllowJoinData &join_data);
 
     ~GameScreen() override;
 
@@ -35,5 +35,7 @@ private:
     SkyBox skybox;
 
     PlayerController player_controller;
+    std::chrono::high_resolution_clock::time_point
+        last_pos_sync_c, last_pos_sync_s;
     Camera camera;
 };

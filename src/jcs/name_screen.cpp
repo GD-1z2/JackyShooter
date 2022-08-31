@@ -13,8 +13,10 @@ NameScreen::NameScreen(JSGame &game) :
     }, [](GuiButton &b) {
         const auto &name = dynamic_cast<NameScreen &>(b.screen).name_input.
             value;
-        if (AddPlayerData::validate(name))
+        if (AddPlayerData::validate(name)) {
+            b.screen.game.game_state.name = name;
             b.screen.game.connection->join(name);
+        }
     }, L"Rejoindre"},
 
     cancel_button{*this, 0, 0, 200, 50, [](GuiObject &o) {
@@ -87,9 +89,7 @@ bool NameScreen::onKey(int key, int scancode, int action, int mods) {
 
     if (GLFW_KEY_ENTER == key && GLFW_PRESS == action &&
         !cancel_button.focused) {
-        const auto &name = name_input.value;
-        if (AddPlayerData::validate(name))
-            game.connection->join(name);
+        join_button.click_handler(join_button);
         return true;
     }
 

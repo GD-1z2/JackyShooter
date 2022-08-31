@@ -37,6 +37,11 @@ enum ClientActionType {
      * Action sent by the server when a player quits.
      */
     PLAYER_LIST_RMV,
+
+    /**
+     * Action sent by the server to update all players positions.
+     */
+    PLAYER_LIST_SET_POS,
 };
 
 struct RefuseJoinData;
@@ -44,6 +49,7 @@ struct AllowJoinData;
 struct AddChatMessageData;
 struct PlayerListAddData;
 struct PlayerListRmvData;
+struct PlayerListSetPosData;
 
 struct ClientAction {
     /**
@@ -60,7 +66,8 @@ struct ClientAction {
         std::unique_ptr<AllowJoinData>,
         std::unique_ptr<AddChatMessageData>,
         std::unique_ptr<PlayerListAddData>,
-        std::unique_ptr<PlayerListRmvData>
+        std::unique_ptr<PlayerListRmvData>,
+        std::unique_ptr<PlayerListSetPosData>
     > data;
 
     template<typename T>
@@ -131,6 +138,25 @@ struct PlayerListRmvData {
             PLAYER_LIST_RMV,
             std::make_unique<PlayerListRmvData>(PlayerListRmvData{
                 name
+            })
+        };
+    }
+};
+
+struct PlayerListSetPosData {
+    struct PlData {
+        std::wstring name;
+        glm::vec3 pos;
+        float yaw;
+    };
+
+    std::vector<PlData> player_positions;
+
+    static ClientAction make(const std::vector<PlData> &player_positions) {
+        return ClientAction{
+            PLAYER_LIST_SET_POS,
+            std::make_unique<PlayerListSetPosData>(PlayerListSetPosData{
+                player_positions
             })
         };
     }

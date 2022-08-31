@@ -13,5 +13,5 @@ struct Player {
     Server *server;
     std::wstring name;
     WsServer::connection_ptr connection;
-    float x, y, z;
+    float x, y, z, yaw;
 };

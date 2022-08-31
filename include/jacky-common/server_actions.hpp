@@ -11,6 +11,14 @@
  */
 static const u16 JACKY_PROTOCOL_VERSION = 0;
 
+/**
+ * The delay between two position syncs in milliseconds.
+ * Used by the client & the server.
+ */
+static const int POS_SYNC_DEL = 500;
+
+static const auto POS_SYNC_DURATION = std::chrono::milliseconds{POS_SYNC_DEL};
+
 enum ServerActionType {
     /**
      * Action created when a player tries to connect.
@@ -32,12 +40,18 @@ enum ServerActionType {
      * chat.
      */
     SEND_CHAT_MESSAGE,
+
+    /**
+     * Action sent by a player to update its position on the server.
+     */
+    UPDATE_PLAYER_POS,
 };
 
 struct AddPendingPlayerData;
 struct AddPlayerData;
 struct RemovePlayerData;
 struct SendChatMessageData;
+struct UpdatePlayerPosData;
 
 struct ServerAction {
     /**
@@ -60,7 +74,8 @@ struct ServerAction {
         std::unique_ptr<AddPendingPlayerData>,
         std::unique_ptr<AddPlayerData>,
         std::unique_ptr<RemovePlayerData>,
-        std::unique_ptr<SendChatMessageData>
+        std::unique_ptr<SendChatMessageData>,
+        std::unique_ptr<UpdatePlayerPosData>
     > data;
 
     template<typename T>
@@ -128,6 +143,20 @@ struct SendChatMessageData {
             SEND_CHAT_MESSAGE, player,
             std::make_unique<SendChatMessageData>(SendChatMessageData{
                 std::move(message)
+            })
+        };
+    }
+};
+
+struct UpdatePlayerPosData {
+    glm::vec3 pos;
+    float yaw;
+
+    static ServerAction make(Player *player, glm::vec3 pos, float yaw) {
+        return ServerAction{
+            UPDATE_PLAYER_POS, player,
+            std::make_unique<UpdatePlayerPosData>(UpdatePlayerPosData{
+                pos, yaw
             })
         };
     }

@@ -16,7 +16,6 @@
 
 ## Roadmap
 
-- Sync position with server & other players
 - Add ability to hold objects
 - Create 2 player modes : normal and free camera
 - Add basic physics to normal mode
