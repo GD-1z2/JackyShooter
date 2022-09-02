@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <jacky-common/defs.hpp>
 #include <string>
 #include <utility>
 

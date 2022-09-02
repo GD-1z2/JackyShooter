@@ -3,7 +3,6 @@
 #include <cstring>
 #include <iostream>
 #include <jacky-common/defs.hpp>
-#include <netinet/in.h>
 #include <vector>
 
 class MessageWriter {

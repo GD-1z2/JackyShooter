@@ -64,22 +64,22 @@ void GuiTextButton::render() {
     renderer.setTransform({x, y, 0}, {width, height, 1});
 
     static const glm::mat4
-        TC_NORMAL{glm::translate(
+        TXC_NORMAL{glm::translate(
         glm::scale(glm::mat4{1.f}, {width / height, 1.f / 3.f, 1.f}),
         {0.f, 2.f, 0.f})},
-        TC_HOVERED{glm::translate(
+        TXC_HOVERED{glm::translate(
         glm::scale(glm::mat4{1.f}, {width / height, 1.f / 3.f, 1.f}),
         {0.f, 1.f, 0.f})},
-        TC_CLICKED{
+        TXC_CLICKED{
         glm::scale(glm::mat4{1.f}, {width / height, 1.f / 3.f, 1.f})};
 
     if (hovered)
         if (clicked)
-            renderer.gui_shader.setTexCoordTransform(TC_CLICKED);
+            renderer.gui_shader.setTexCoordTransform(TXC_CLICKED);
         else
-            renderer.gui_shader.setTexCoordTransform(TC_HOVERED);
+            renderer.gui_shader.setTexCoordTransform(TXC_HOVERED);
     else
-        renderer.gui_shader.setTexCoordTransform(TC_NORMAL);
+        renderer.gui_shader.setTexCoordTransform(TXC_NORMAL);
 
     renderer.rect_vbo.draw();
 

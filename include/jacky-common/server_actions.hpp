@@ -15,7 +15,7 @@ static const u16 JACKY_PROTOCOL_VERSION = 0;
  * The delay between two position syncs in milliseconds.
  * Used by the client & the server.
  */
-static const int POS_SYNC_DEL = 500;
+static const int POS_SYNC_DEL = 50;
 
 static const auto POS_SYNC_DURATION = std::chrono::milliseconds{POS_SYNC_DEL};
 
